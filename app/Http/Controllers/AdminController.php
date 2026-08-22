@@ -219,4 +219,65 @@ class AdminController extends Controller
         JsonDb::save($db);
         return response()->json(['success' => true]);
     }
+
+    public function apiAiSettings()
+    {
+        JsonDb::init();
+        $ai = JsonDb::get()['ai'] ?? [];
+        $envKey = (string) config('services.openai.api_key');
+
+        return response()->json([
+            'success' => true,
+            'settings' => [
+                'base_url' => $ai['base_url'] ?? config('services.openai.base_url'),
+                'model' => $ai['model'] ?? config('services.openai.model'),
+                'tpm_budget' => $ai['tpm_budget'] ?? config('services.openai.tpm_budget'),
+                // Masked previews so the admin can see WHICH key is active without exposing it
+                'key_source' => !empty($ai['api_key']) ? 'override' : '.env',
+                'key_preview' => substr((string) ($ai['api_key'] ?? $envKey), 0, 6) . '...' . substr((string) ($ai['api_key'] ?? $envKey), -4),
+            ],
+        ]);
+    }
+
+    public function apiUpdateAiSettings(Request $request)
+    {
+        $data = $request->validate([
+            'base_url' => 'required|url',
+            'model' => 'required|string|max:100',
+            'api_key' => 'required|string|min:8|max:200',
+            'tpm_budget' => 'nullable|integer|min:0|max:1000000',
+        ]);
+
+        JsonDb::init();
+        $db = JsonDb::get();
+        $db['ai'] = [
+            'base_url' => rtrim(trim($data['base_url']), '/'),
+            'model' => trim($data['model']),
+            'api_key' => trim($data['api_key']),
+            'tpm_budget' => (int) ($data['tpm_budget'] ?? 7800),
+            'updatedBy' => Session::get('user')['id'] ?? 'admin',
+            'updatedAt' => now()->toIso8601String(),
+        ];
+        JsonDb::save($db);
+
+        return response()->json(['success' => true, 'message' => 'AI provider settings saved.']);
+    }
+
+    /**
+     * Live-test the configured AI provider with a tiny request and return
+     * the real result or the real error, so bad configs are obvious.
+     */
+    public function apiTestAi()
+    {
+        try {
+            $ai = app(\App\Services\OpenAIService::class);
+            $out = $ai->generate('Return ONLY this JSON: {"status":"ok"}', true, 64, 0);
+            if (!empty($out)) {
+                return response()->json(['success' => true, 'message' => 'AI provider is working. Response: ' . mb_substr($out, 0, 120)]);
+            }
+            return response()->json(['success' => false, 'error' => 'Provider returned an empty response. ' . ($ai->getLastError() ?? '')], 422);
+        } catch (\Throwable $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 422);
+        }
+    }
 }

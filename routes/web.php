@@ -101,6 +101,9 @@ Route::prefix('api')->group(function () {
     Route::post('/admin/users/{userId}/update', [AdminController::class, 'apiUpdateUser']);
     Route::post('/admin/users/{userId}/delete', [AdminController::class, 'apiDeleteUser']);
     Route::post('/admin/feedback/{feedbackId}/delete', [AdminController::class, 'apiDeleteFeedback']);
+    Route::get('/admin/ai-settings', [AdminController::class, 'apiAiSettings']);
+    Route::post('/admin/ai-settings', [AdminController::class, 'apiUpdateAiSettings']);
+    Route::post('/admin/ai-test', [AdminController::class, 'apiTestAi']);
     Route::post('/exams', [ExamController::class, 'apiStore']);
     Route::post('/exams/{examId}/settings', [ExamController::class, 'apiUpdateSettings']);
     Route::post('/exams/{examId}/publish', [ExamController::class, 'apiPublish']);

@@ -85,6 +85,22 @@ Always respond with accurate, well-structured content tailored for teachers and 
         $this->timeout = max(30, (int) config('services.openai.timeout', 120));
         $this->tpmBudget = max(0, (int) config('services.openai.tpm_budget', 0));
 
+        // Runtime override from Admin > Settings > AI Provider (stored in brain_db.json).
+        // Takes precedence over .env so the provider can be fixed from the browser.
+        try {
+            $override = \App\Helpers\JsonDb::get()['ai'] ?? null;
+            if (is_array($override) && !empty($override['api_key']) && !empty($override['base_url']) && !empty($override['model'])) {
+                $this->apiKey = (string) $override['api_key'];
+                $this->baseUrl = rtrim((string) $override['base_url'], '/');
+                $this->model = (string) $override['model'];
+                if (!empty($override['tpm_budget']) || isset($override['tpm_budget']) && (string)$override['tpm_budget'] === '0') {
+                    $this->tpmBudget = max(0, (int) $override['tpm_budget']);
+                }
+            }
+        } catch (\Throwable $e) {
+            // Ignore — fall back to env config
+        }
+
         if (!empty($this->apiKey)) {
             $this->providers[] = [
                 'name' => 'primary',

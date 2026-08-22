@@ -488,6 +488,40 @@
                             <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-sm font-bold rounded-xl transition shadow-lg shadow-purple-500/20 cursor-pointer active:scale-[0.98]">Save Settings</button>
                         </form>
                     </div>
+
+                    {{-- === AI PROVIDER SETTINGS === --}}
+                    <div class="bg-white/90 rounded-2xl border border-white shadow-sm p-6 max-w-2xl mt-6">
+                        <div class="flex items-center justify-between mb-1">
+                            <h3 class="text-sm font-black text-slate-800 uppercase tracking-wider">AI Provider</h3>
+                            <span id="ai-key-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600"></span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-4">Controls lesson notes, lesson plans and question generation. Overrides the server .env. Get free keys at <a href="https://console.groq.com/keys" target="_blank" rel="noopener" class="text-purple-600 font-semibold underline">Groq</a> or <a href="https://platform.deepseek.com/api_keys" target="_blank" rel="noopener" class="text-purple-600 font-semibold underline">DeepSeek</a>.</p>
+                        <form onsubmit="saveAiSettings(event)" class="space-y-4">
+                            <div>
+                                <label class="text-xs font-semibold text-slate-600 block mb-1.5 uppercase tracking-wider">API Base URL</label>
+                                <input type="url" id="ai-base-url" placeholder="https://api.groq.com/openai" class="w-full px-4 py-2.5 input-bright rounded-xl text-sm transition">
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold text-slate-600 block mb-1.5 uppercase tracking-wider">Model</label>
+                                <input type="text" id="ai-model" placeholder="openai/gpt-oss-120b" class="w-full px-4 py-2.5 input-bright rounded-xl text-sm transition">
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold text-slate-600 block mb-1.5 uppercase tracking-wider">API Key</label>
+                                <input type="password" id="ai-api-key" placeholder="Paste full API key to replace" autocomplete="off" class="w-full px-4 py-2.5 input-bright rounded-xl text-sm transition">
+                                <p class="text-[11px] text-slate-400 mt-1">Current: <span id="ai-key-preview"></span> — paste a new key only when changing it.</p>
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold text-slate-600 block mb-1.5 uppercase tracking-wider">Token Budget Per Request (0 = unlimited)</label>
+                                <input type="number" id="ai-tpm-budget" value="7800" class="w-full px-4 py-2.5 input-bright rounded-xl text-sm transition">
+                                <p class="text-[11px] text-slate-400 mt-1">Groq free tier = 8000 (keep 7800). Paid tiers / DeepSeek = 0.</p>
+                            </div>
+                            <div id="ai-msg" class="hidden p-3 rounded-xl text-xs font-bold"></div>
+                            <div class="flex gap-2">
+                                <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white text-sm font-bold rounded-xl transition shadow-lg cursor-pointer active:scale-[0.98]">Save &amp; Apply</button>
+                                <button type="button" onclick="testAiProvider(this)" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold rounded-xl transition cursor-pointer active:scale-[0.98]">Test Connection</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
             </div>{{-- /content --}}
@@ -557,6 +591,7 @@ function fetchData() {
         fetch('/api/admin/activities').then(r => r.json())
     ]).then(([stats, activityData]) => {
         data = { ...stats, activities: activityData.activities || [] };
+        loadAiSettings();
         document.getElementById('last-refresh').textContent = 'Updated ' + new Date().toLocaleTimeString();
         renderStats();
         renderUsers();
@@ -813,6 +848,63 @@ function saveSettings(e) {
         msg.classList.remove('hidden');
         setTimeout(() => msg.classList.add('hidden'), 3000);
     }).finally(() => { btn.disabled = false; btn.textContent = 'Save Settings'; });
+}
+
+// ===== AI Provider Settings =====
+function loadAiSettings() {
+    fetch('/api/admin/ai-settings').then(r => r.json()).then(d => {
+        if (!d.success) return;
+        const s = d.settings;
+        document.getElementById('ai-base-url').value = s.base_url || '';
+        document.getElementById('ai-model').value = s.model || '';
+        document.getElementById('ai-tpm-budget').value = s.tpm_budget ?? 7800;
+        document.getElementById('ai-key-preview').textContent = s.key_preview || 'not set';
+        const badge = document.getElementById('ai-key-badge');
+        badge.textContent = s.key_source === 'override' ? 'Override active' : 'Using .env';
+        badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full ' + (s.key_source === 'override' ? 'bg-violet-100 text-violet-700' : 'bg-slate-100 text-slate-600');
+    }).catch(() => {});
+}
+
+function saveAiSettings(e) {
+    e.preventDefault();
+    const keyInput = document.getElementById('ai-api-key');
+    if (!keyInput.value.trim()) {
+        const msg = document.getElementById('ai-msg');
+        msg.className = 'p-3 rounded-xl text-xs font-bold bg-red-50 text-red-700 border border-red-200';
+        msg.textContent = 'Paste the full API key (keys cannot be read back after saving).';
+        return;
+    }
+    fetch('/api/admin/ai-settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            base_url: document.getElementById('ai-base-url').value.trim(),
+            model: document.getElementById('ai-model').value.trim(),
+            api_key: keyInput.value.trim(),
+            tpm_budget: parseInt(document.getElementById('ai-tpm-budget').value) || 0,
+        })
+    }).then(r => r.json()).then(d => {
+        const msg = document.getElementById('ai-msg');
+        msg.className = 'p-3 rounded-xl text-xs font-bold ' + (d.success ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200');
+        msg.textContent = d.success ? (d.message + ' Takes effect immediately.') : (d.error || 'Failed to save.');
+        msg.classList.remove('hidden');
+        if (d.success) { keyInput.value = ''; loadAiSettings(); }
+    }).catch(err => alert('Error: ' + err.message));
+}
+
+function testAiProvider(btn) {
+    btn.disabled = true; btn.textContent = 'Testing...';
+    const msg = document.getElementById('ai-msg');
+    msg.classList.remove('hidden');
+    msg.className = 'p-3 rounded-xl text-xs font-bold bg-slate-50 text-slate-600 border border-slate-200';
+    msg.textContent = 'Sending a tiny test request to the AI provider...';
+    fetch('/api/admin/ai-test', { method: 'POST' }).then(r => r.json()).then(d => {
+        msg.className = 'p-3 rounded-xl text-xs font-bold ' + (d.success ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200');
+        msg.textContent = d.success ? d.message : (d.error || 'Test failed.');
+    }).catch(err => {
+        msg.className = 'p-3 rounded-xl text-xs font-bold bg-red-50 text-red-700 border border-red-200';
+        msg.textContent = 'Error: ' + err.message;
+    }).finally(() => { btn.disabled = false; btn.textContent = 'Test Connection'; });
 }
 
 function exportUsersCSV() {
