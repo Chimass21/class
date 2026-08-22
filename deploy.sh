@@ -142,6 +142,48 @@ if [[ "$HAD_CHANGES" == true ]]; then
     fi
 fi
 
+# --- AI provider auto-repair ---
+# Fixes known-dead AI configs automatically so generation keeps working.
+log "  -> Checking AI provider configuration..."
+if [ -f .env ]; then
+    HAS_OVERRIDE=$(php -r 'try { $d = json_decode(@file_get_contents("brain_db.json"), true); echo (!empty($d["ai"]["api_key"]) && !empty($d["ai"]["base_url"])) ? "yes" : "no"; } catch (\Throwable $e) { echo "no"; }' 2>/dev/null || echo "no")
+
+    if [ "$HAS_OVERRIDE" = "yes" ]; then
+        log "     Admin AI override active in brain_db.json - .env untouched."
+    else
+        DEAD_CONFIG=0
+        grep -q '^OPENAI_MODEL=zai-glm-4.7' .env && DEAD_CONFIG=1
+        if grep -q '^OPENAI_BASE_URL=https://api.cerebras.ai' .env && grep -q '^OPENAI_API_KEY=csk-' .env; then
+            DEAD_CONFIG=1
+        fi
+
+        if [ "$DEAD_CONFIG" = "1" ]; then
+            log "     Dead AI configuration detected. Repairing to Groq (openai/gpt-oss-120b)..."
+            sed -i 's|^OPENAI_BASE_URL=.*|OPENAI_BASE_URL=https://api.groq.com/openai|' .env
+            sed -i 's|^OPENAI_MODEL=.*|OPENAI_MODEL=openai/gpt-oss-120b|' .env
+            grep -q '^OPENAI_TPM_BUDGET=' .env || echo 'OPENAI_TPM_BUDGET=7800' >> .env
+
+            if ! grep -q '^OPENAI_API_KEY=gsk-' .env; then
+                if [ -t 0 ]; then
+                    printf "     Paste your Groq API key (from console.groq.com/keys), or Enter to skip: "
+                    read -r GROQ_KEY
+                else
+                    GROQ_KEY=""
+                fi
+                if [ -n "$GROQ_KEY" ]; then
+                    sed -i "s|^OPENAI_API_KEY=.*|OPENAI_API_KEY=${GROQ_KEY}|" .env
+                    log "     API key updated."
+                else
+                    log "     SKIPPED KEY: paste your Groq key later in Admin > Settings > AI Provider."
+                fi
+            fi
+            log "     AI provider repaired."
+        else
+            log "     AI config looks OK."
+        fi
+    fi
+fi
+
 # Laravel post-deploy tasks
 if [ -f artisan ]; then
     log "  -> Running migrations..."
