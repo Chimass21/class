@@ -510,8 +510,9 @@
     </footer>
 
     <!-- SYSTEM AUTHENTICATION MODAL DIALOG (Sign Up, Sign In, Reset password) -->
-    <div id="auth-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm font-sans hidden">
-        <div class="bg-white rounded-3xl border border-slate-200 max-w-md w-full p-8 shadow-2xl relative space-y-6">
+    <div id="auth-modal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/60 backdrop-blur-sm font-sans hidden">
+        <div class="flex min-h-full items-center justify-center p-4">
+        <div class="bg-white rounded-3xl border border-slate-200 max-w-md w-full p-8 shadow-2xl relative space-y-6 my-auto">
             <button
                 onclick="toggleAuthModal()"
                 class="absolute top-4 right-4 p-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-full cursor-pointer transition border-none"
@@ -666,6 +667,7 @@
                 </button>
                 
                 </form>
+        </div>
         </div>
     </div>
 </div>

@@ -12,6 +12,7 @@ class OpenAIService
     protected string $model;
     protected int $maxRetries;
     protected int $timeout;
+    protected int $tpmBudget;
 
     protected const SYSTEM_PROMPT = 'You are Brain, an expert Nigerian curriculum specialist and experienced classroom teacher. You generate high-quality, curriculum-aligned lesson plans, lesson notes, examination questions, and educational resources for Nigerian primary and secondary schools following NERDC/UBEC/WASSCE/NECO/JAMB standards.
 
@@ -32,7 +33,7 @@ For PHYSICS LESSON NOTES: Every Physics topic with calculations must include a M
 
 For PHYSICS QUESTIONS: Distribute as 80% Calculation Questions and 20% Theory/Conceptual Questions. Calculation questions require formula selection, substitutions, calculations, and unit conversion. Theory questions test concepts, definitions, principles, laws, applications, and interpretation.
 
-For CHEMISTRY LESSON NOTES: Balance all chemical equations. Use proper subscripts (H₂O, CO₂, H₂SO₄), superscripts for charges (Ca²⁺, SO₄²⁻), state symbols (s), (l), (g), (aq), reaction arrows (→, ⇌). Include worked calculation examples for quantitative chemistry topics.
+For CHEMISTRY LESSON NOTES: Balance all chemical equations. Use proper subscripts (H₂O, CO₂, H₂SO₄), superscripts for charges (Ca²⁺, SO₄²⁻), state symbols (s), (l), (g), (aq), reaction arrows (→, ⇌). CORE RULE — let the topic decide whether calculations are needed: include numerical worked calculations ONLY when the topic is inherently quantitative (mole concept, stoichiometry, concentration/molarity, gas laws, empirical/molecular formulae, percentage composition, electrolysis calculations, pH, solubility, titration, yield/purity, quantitative energetics). For descriptive topics (e.g. sulphur, nitrogen and its compounds, periodicity, air, water, organic nomenclature) do NOT force or invent calculations — cover the real chemistry instead: occurrence, allotropes, electronic configuration, physical/chemical properties, correctly BALANCED REACTION EQUATIONS (equations are not calculations), important compounds, preparation/extraction, uses, identification tests, industrial and environmental relevance. Adapt the section headings to the specific topic — never apply one fixed Chemistry template to every topic.
 
 MATHEMATICAL AND SCIENTIFIC NOTATION (CRITICAL FORMATTING RULES):
 - All expressions, equations, formulae, and calculations MUST use proper mathematical notation, not plain text
@@ -63,6 +64,7 @@ Always respond with accurate, well-structured content tailored for teachers and 
         $this->model = config('services.openai.model', 'deepseek-chat');
         $this->maxRetries = max(1, (int) config('services.openai.max_retries', 3));
         $this->timeout = max(30, (int) config('services.openai.timeout', 120));
+        $this->tpmBudget = max(0, (int) config('services.openai.tpm_budget', 0));
     }
 
     public function generate(string $prompt, bool $jsonMode = false, int $maxTokens = 16384, ?float $temperature = null): string
@@ -267,6 +269,8 @@ Always respond with accurate, well-structured content tailored for teachers and 
 
     protected function buildPayload(string $prompt, bool $jsonMode, int $maxTokens, ?float $temperature = null): array
     {
+        $maxTokens = $this->capMaxTokensToBudget($prompt, $maxTokens);
+
         $payload = [
             'model' => $this->model,
             'messages' => [
@@ -290,6 +294,27 @@ Always respond with accurate, well-structured content tailored for teachers and 
         }
 
         return $payload;
+    }
+
+    /**
+     * Some providers (e.g. Groq free tier) enforce a per-request token budget:
+     * prompt tokens + max_tokens must not exceed the TPM limit or the request
+     * is rejected with 413. Estimate the prompt size (~4 chars/token) and cap
+     * the output allowance so the whole request fits.
+     */
+    protected function capMaxTokensToBudget(string $prompt, int $maxTokens): int
+    {
+        if ($this->tpmBudget <= 0) {
+            return $maxTokens;
+        }
+
+        $estimatedPromptTokens = (int) ceil(strlen(self::SYSTEM_PROMPT) / 4)
+            + (int) ceil(mb_strlen($prompt) / 4)
+            + 40;
+
+        $allowed = max(256, $this->tpmBudget - $estimatedPromptTokens);
+
+        return min($maxTokens, $allowed);
     }
 
     protected function cleanJsonResponse(string $text): string

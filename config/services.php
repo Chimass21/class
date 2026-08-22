@@ -7,6 +7,10 @@ return [
         'model' => env('OPENAI_MODEL', 'deepseek-chat'),
         'max_retries' => env('OPENAI_MAX_RETRIES', 3),
         'timeout' => env('OPENAI_TIMEOUT', 120),
+
+        // Max tokens (prompt + output) allowed in ONE request. Groq free tier
+        // enforces a hard 8000 TPM cap per request. Set to 0 to disable capping.
+        'tpm_budget' => env('OPENAI_TPM_BUDGET', 7800),
     ],
 
     'whatsapp' => [

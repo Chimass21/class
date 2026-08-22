@@ -343,36 +343,36 @@ class ContentGenerator
         $isEnglish = str_contains($subj, 'english') || str_contains($subj, 'literature');
 
         $patterns = [
-            "By the end of the lesson, students should be able to {$verbs[0]} " . lcfirst($topic) . ".",
-            "Students will {$verbs[1]} the key features and characteristics of " . lcfirst($topic) . ".",
-            "Students will {$verbs[2]} the relationship between " . lcfirst($topic) . " and related concepts in {$subject}.",
-            "Students will {$verbs[3]} between the different aspects of " . lcfirst($topic) . ".",
-            "Students will {$verbs[4]} the principles of " . lcfirst($topic) . " to solve practical problems.",
+            "Learners {$verbs[0]} " . lcfirst($topic) . ".",
+            "Learners {$verbs[1]} the key features and characteristics of " . lcfirst($topic) . ".",
+            "Learners {$verbs[2]} the relationship between " . lcfirst($topic) . " and related concepts in {$subject}.",
+            "Learners {$verbs[3]} between the different aspects of " . lcfirst($topic) . ".",
+            "Learners {$verbs[4]} the principles of " . lcfirst($topic) . " to solve practical problems.",
         ];
 
         if ($isMath) {
             $patterns = [
-                "By the end of the lesson, students should be able to solve problems involving " . lcfirst($topic) . ".",
-                "Students will correctly apply the formula for " . lcfirst($topic) . " to given problems.",
-                "Students will interpret and solve word problems related to " . lcfirst($topic) . ".",
-                "Students will demonstrate the step-by-step working for " . lcfirst($topic) . " problems.",
-                "Students will verify their solutions to " . lcfirst($topic) . " problems using alternative methods.",
+                "Learners solve problems involving " . lcfirst($topic) . ".",
+                "Learners correctly apply the formula for " . lcfirst($topic) . " to given problems.",
+                "Learners interpret and solve word problems related to " . lcfirst($topic) . ".",
+                "Learners demonstrate the step-by-step working for " . lcfirst($topic) . " problems.",
+                "Learners verify their solutions to " . lcfirst($topic) . " problems using alternative methods.",
             ];
         } elseif ($isScience) {
             $patterns = [
-                "By the end of the lesson, students should be able to {$verbs[0]} " . lcfirst($topic) . " with accurate scientific terminology.",
-                "Students will {$verbs[1]} the principles and processes involved in " . lcfirst($topic) . ".",
-                "Students will {$verbs[2]} the practical applications of " . lcfirst($topic) . " in everyday life.",
-                "Students will {$verbs[3]} between related concepts within " . lcfirst($topic) . ".",
-                "Students will {$verbs[4]} the scientific method to investigate " . lcfirst($topic) . ".",
+                "Learners {$verbs[0]} " . lcfirst($topic) . " with accurate scientific terminology.",
+                "Learners {$verbs[1]} the principles and processes involved in " . lcfirst($topic) . ".",
+                "Learners {$verbs[2]} the practical applications of " . lcfirst($topic) . " in everyday life.",
+                "Learners {$verbs[3]} between related concepts within " . lcfirst($topic) . ".",
+                "Learners {$verbs[4]} the scientific method to investigate " . lcfirst($topic) . ".",
             ];
         } elseif ($isEnglish) {
             $patterns = [
-                "By the end of the lesson, students should be able to {$verbs[0]} " . lcfirst($topic) . " in their own words.",
-                "Students will {$verbs[1]} examples of " . lcfirst($topic) . " in given passages.",
-                "Students will {$verbs[2]} the usage of " . lcfirst($topic) . " in different contexts.",
-                "Students will {$verbs[3]} between correct and incorrect usage of " . lcfirst($topic) . ".",
-                "Students will {$verbs[4]} their knowledge of " . lcfirst($topic) . " in their own writing.",
+                "Learners {$verbs[0]} " . lcfirst($topic) . " in their own words.",
+                "Learners {$verbs[1]} examples of " . lcfirst($topic) . " in given passages.",
+                "Learners {$verbs[2]} the usage of " . lcfirst($topic) . " in different contexts.",
+                "Learners {$verbs[3]} between correct and incorrect usage of " . lcfirst($topic) . ".",
+                "Learners {$verbs[4]} their knowledge of " . lcfirst($topic) . " in their own writing.",
             ];
         }
 

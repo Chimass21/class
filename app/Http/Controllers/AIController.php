@@ -780,7 +780,7 @@ CRITICAL — MUST FIT EXACTLY ONE A4 PAGE:
 
 Return ONLY valid JSON with this exact structure (no markdown, no code fences). The arrays must have the SAME length (behaviouralObjectives count === lessonSteps count === evaluation question count):
 {
-  "behaviouralObjectives": ["Full detailed objective sentence 1.", "Full detailed objective sentence 2.", ...],
+  "behaviouralObjectives": ["Learners define ...", "Learners identify ...", "Learners differentiate between ..."],
   "instructionalMaterials": ["Material 1", "Material 2", "Material 3", ...],
   "previousKnowledge": "2-3 sentences about what students already know related to this topic.",
   "lessonSteps": [
@@ -799,6 +799,7 @@ Return ONLY valid JSON with this exact structure (no markdown, no code fences). 
 
 RULES:
 - {$stepCountInstruction}
+- BEHAVIOURAL OBJECTIVES STYLE (MANDATORY): write each objective directly with an action verb, starting with "Learners" + present-tense verb — e.g. "Learners define the concept of...", "Learners list the types of...", "Learners identify the parts of...", "Learners explain the importance of...", "Learners differentiate between...", "Learners describe the process of...", "Learners calculate...", "Learners demonstrate...", "Learners state...", "Learners mention...", "Learners apply...", "Learners analyse...". NEVER use the phrases "students should be able to", "students will be able to", "pupils should be able to" or any "By the end of the lesson..." prefix in objectives. Each objective must remain a full, detailed, measurable sentence.
 - Each objective, its corresponding step, and its evaluation question must cover the SAME sub-topic.
 - Teacher and learner activities must be practical, detailed, and curriculum-based.
 - ALL content must be about "{$topic}" specifically for {$class} level ({$ageRange}).
@@ -839,13 +840,13 @@ Each lesson step should follow this pattern:
 4. **Independent class work**: Students solve problems on their own
 5. **Review answers** and address common mistakes
 
-BEHAVIOURAL OBJECTIVES must be action-oriented and measurable (e.g., "solve quadratic equations using the formula method", "factorise algebraic expressions", "calculate the area of a circle").
+BEHAVIOURAL OBJECTIVES must be action-oriented and measurable, each starting with "Learners" + an action verb — e.g., "Learners solve quadratic equations using the formula method", "Learners factorise algebraic expressions", "Learners calculate the area of a circle". NEVER write "students should be able to..." or any similar prefix.
 
 {$stepCountInstruction}
 
 Return ONLY valid JSON with this exact structure:
 {
-  "behaviouralObjectives": ["By the end of the lesson, students should be able to solve/factorise/calculate/sketch ..."],
+  "behaviouralObjectives": ["Learners solve/factorise/calculate/sketch ..."],
   "instructionalMaterials": ["Whiteboard/Chalkboard", "Markers/Chalk", "Textbook", "Worked example handouts", "Graph paper (if needed)", "Calculator (if allowed)", ...],
   "previousKnowledge": "State the prerequisite mathematical knowledge required for this topic (e.g., multiplication tables, basic algebra, previous formulae). Keep it concise.",
   "lessonSteps": [
@@ -923,7 +924,7 @@ PROMPT;
         }
 
         $subjectGuidance = match($subjectCategory) {
-            'stem' => "This is a SCIENCE subject. Include: relevant formulae, worked examples (step-by-step), calculations, derivations, laws/principles, experiments/practical activities, labelled [DIAGRAM: description] placeholders, and real-world applications where appropriate.
+            'stem' => "This is a SCIENCE subject. Include: relevant formulae, laws/principles, experiments/practical activities, labelled [DIAGRAM: description] placeholders, and real-world applications where appropriate. Include worked examples and calculations ONLY when the specific topic genuinely involves quantitative work (see subject rules below) — never force calculations into descriptive topics.
 
 CRITICAL — YOU MUST INCLUDE A MINIMUM OF 5 FULLY SOLVED NUMERICAL EXAMPLES for any Physics or Chemistry topic that involves calculations:
 
@@ -935,15 +936,24 @@ For PHYSICS topics with calculations — INCLUDE EXACTLY 5-7 WORKED EXAMPLES:
   Example 5: Examination standard (WAEC/NECO/JAMB style)
   Each example must include: Formula Used → Given Data → Substitution with units → Step-by-step working → Final Answer with correct SI units
 
-For CHEMISTRY topics with calculations — INCLUDE EXACTLY 5-7 WORKED EXAMPLES:
+For CHEMISTRY — LET THE TOPIC DETERMINE WHETHER CALCULATIONS ARE NEEDED:
+  First classify the topic as QUANTITATIVE or DESCRIPTIVE.
+  QUANTITATIVE topics (numerical examples REQUIRED): mole concept, stoichiometry, concentration/molarity, gas laws, relative atomic/molecular masses, empirical & molecular formulae, percentage composition, electrolysis calculations, pH calculations, energy changes involving calculations, solubility, titration, yield & percentage purity.
+    → Include 5-7 fully solved numerical examples: Formula Used → Given Data → Substitution with units → Step-by-step working → Final Answer
+  DESCRIPTIVE topics (qualitative, structural, property-based — e.g. Sulphur, Nitrogen and its compounds, Periodic Table, Air, Water, metals, hydrocarbon nomenclature):
+    → Do NOT manufacture or force numerical calculations. Concentrate on the ACTUAL chemistry: definition/introduction, position in periodic table, electronic configuration, occurrence, allotropes/isotopes where relevant, physical properties, chemical properties, key reactions WITH BALANCED CHEMICAL EQUATIONS, important compounds, preparation/extraction/industrial production, uses, tests for identification, environmental effects, health & safety, examination points and common misconceptions.
+  KEY DISTINCTION: balanced chemical EQUATIONS are NOT numerical calculations — include relevant equations in almost every Chemistry note; numerical worked examples ONLY when the topic genuinely requires them.
+  Never invent calculations just to make the note look more detailed. Every section must be relevant to THIS topic — no fixed template.
+
+For other purely theoretical/conceptual science topics — include illustrative examples or case studies instead of calculations
+
+CHEMISTRY FORMATTING REQUIREMENTS (all Chemistry notes):
   Balance ALL chemical equations with proper state symbols
   Use proper subscripts (H₂O, CO₂, H₂SO₄, NH₃, C₂H₅OH, CaCO₃, CH₄, NaCl)
   Use proper superscripts for charges (Ca²⁺, SO₄²⁻, Na⁺, Cl⁻, Fe³⁺, OH⁻)
   Use → for reaction arrows, ⇌ for reversible reactions
   Show state symbols: (s), (l), (g), (aq)
   Format ionic equations with proper charges
-
-For topics that are purely theoretical/conceptual — include 5 illustrative examples or case studies instead
 
 FORMATTING REQUIREMENTS FOR EQUATIONS AND FORMULAE:
 - Use <sup> for exponents and powers: m/s<sup>2</sup>, N/m<sup>2</sup>, 10<sup>6</sup>
@@ -999,7 +1009,7 @@ Now write the lesson note. Return ONLY valid JSON. ALL fields below are OPTIONAL
 {
   "topic": "{$topic}",
   "subtopics": ["Relevant subtopics — only if the topic naturally breaks into subtopics"],
-  "learningObjectives": ["By the end of the lesson, students should be able to: ..." — only if objectives add value],
+  "learningObjectives": ["Learners define ...", "Learners explain ..." — start each with 'Learners' + action verb; NEVER 'students should be able to' — only if objectives add value],
   "introduction": "3-5 sentence engaging introduction connecting to prior knowledge with Nigeria context",
   "content": "FULL HTML — MAIN BODY of the lesson (~2-3 A4 pages). Choose <h3> for main section headings and <h4> for subsections that are APPROPRIATE for this topic. Possible headings (use only what fits): Definitions, Types/Kinds, Classification, Properties, Characteristics, Structure, Functions, Causes, Effects, Symptoms, Prevention, Control, Processes, Steps, Principles, Laws, Formulae, Worked Examples, Solved Problems, Experiments, Observations, Uses, Importance, Benefits, Drawbacks, Diagrams, Tables. Use <p>, <ul>, <ol>, <table>, <pre> as needed. For diagrams: include [DIAGRAM: clear description]. For calculations: show step-by-step solutions. Use Nigeria-centric examples throughout.",
   "sections": [
@@ -1116,7 +1126,7 @@ Return ONLY valid JSON:
 {
   "topic": "{$topic}",
   "subtopics": ["Relevant subtopics"],
-  "learningObjectives": ["By the end of the lesson, students should be able to: ..."],
+  "learningObjectives": ["Learners define ...", "Learners identify ...", "Learners calculate ..." — start each with 'Learners' + action verb; NEVER 'students should be able to'],
   "introduction": "VERY BRIEF — 1-2 sentences connecting to prior knowledge or stating the importance of this topic in Mathematics",
   "content": "FULL HTML — MAIN BODY (~3-4 A4 pages). 80-90% of this must be worked examples, step-by-step solutions, and practice exercises. Use <h3> for section headings, <pre> or <code> for mathematical workings, <table> for comparison/formulae. INCLUDE A MINIMUM OF 5 WORKED EXAMPLES. Each worked example must show all steps clearly. Include practice exercises after each section without solutions. FORMAT ALL MATHEMATICAL EXPRESSIONS using proper notation as specified above.",
   "sections": [
@@ -1726,6 +1736,7 @@ PROMPT;
 
     protected function storeAndReturnLessonPlan(array $plan, array $data, $user, string $teacherName, string $schoolName, string $duration, string $ageRange)
     {
+        $plan = $this->normalizeObjectivePhrasing($plan);
         $plan['subject'] = $data['subject'];
         $plan['class'] = $data['class'];
         $plan['term'] = $data['term'];
@@ -1759,8 +1770,45 @@ PROMPT;
         ]);
     }
 
+    /**
+     * Enforce objective style: start with "Learners" + action verb.
+     * Rewrites legacy phrasings such as "By the end of the lesson, students
+     * should be able to define ..." into "Learners define ...".
+     */
+    protected function normalizeObjectivePhrasing(array $content): array
+    {
+        $rewrite = function (string $line): string {
+            $trimmed = trim($line);
+            if ($trimmed === '' || !preg_match(
+                '/^((?:\d+[.)]\s+)?)(?:by\s+the\s+end\s+of\s+(?:the|this)\s+lesson[,]?\s+)?(?:students?|pupils?|learners)\s+(?:(?:should|will|would|can|could|may)\s+)?(?:be\s+able\s+to\s+|to\s+)?(.+)$/is',
+                $trimmed,
+                $m
+            )) {
+                return $trimmed;
+            }
+            return $m[1] . 'Learners ' . lcfirst(trim($m[2]));
+        };
+
+        foreach (['behaviouralObjectives', 'learningObjectives', 'objectives'] as $key) {
+            if (empty($content[$key])) {
+                continue;
+            }
+            if (is_array($content[$key])) {
+                $content[$key] = array_map($rewrite, array_map('strval', $content[$key]));
+            } elseif (is_string($content[$key])) {
+                $lines = preg_split('/\r\n|\r|\n/', $content[$key]);
+                $content[$key] = implode("\n", array_map($rewrite, $lines));
+            }
+        }
+
+        return $content;
+    }
+
     protected function storeAndReturnLessonNote(array $note, array $data, $user, string $periods, string $difficulty, string $ageRange)
     {
+        // Enforce "Learners <verb> ..." objective style
+        $note = $this->normalizeObjectivePhrasing($note);
+
         // Unwrap lesson_note wrapper key (some AIs nest content inside it)
         if (!empty($note['lesson_note']) && is_array($note['lesson_note'])) {
             $inner = $note['lesson_note'];
