@@ -87,7 +87,7 @@ class AIController extends Controller
                 ]);
                 return response()->json([
                     'success' => false,
-                    'error' => 'Failed to generate a valid lesson plan. The AI response was not in the expected format. Please try again.',
+                    'error' => 'Failed to generate a valid lesson plan. The AI response was not in the expected format. Please try again.' . $this->aiErrorSuffix(),
                 ], 422);
             }
 
@@ -225,7 +225,7 @@ class AIController extends Controller
                     }
                     return response()->json([
                         'success' => false,
-                        'error' => $errorMsg,
+                        'error' => $errorMsg . $this->aiErrorSuffix(),
                     ], 422);
                 }
 
@@ -1768,6 +1768,20 @@ PROMPT;
             'planId' => $planId,
             'message' => 'Lesson plan generated successfully.',
         ]);
+    }
+
+    /**
+     * Human-readable suffix describing the underlying AI provider failure,
+     * so users see the real cause (bad key, quota, archived model...) instead
+     * of a generic "empty response" message.
+     */
+    protected function aiErrorSuffix(): string
+    {
+        $err = $this->ai->getLastError();
+        if (empty($err)) {
+            return '';
+        }
+        return ' [AI: ' . mb_substr($err, 0, 220) . ']';
     }
 
     /**

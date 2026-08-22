@@ -13,6 +13,14 @@ return [
         'tpm_budget' => env('OPENAI_TPM_BUDGET', 7800),
     ],
 
+    // Optional automatic failover provider. If the primary AI fails (bad key,
+    // archived model, quota), generation transparently continues on DeepSeek.
+    'deepseek' => [
+        'api_key' => env('DEEPSEEK_API_KEY'),
+        'base_url' => env('DEEPSEEK_BASE_URL', 'https://api.deepseek.com'),
+        'model' => env('DEEPSEEK_MODEL', 'deepseek-chat'),
+    ],
+
     'whatsapp' => [
         // Number exam results are forwarded to via wa.me deep links.
         // Accepts local (0806...) or international (+2348062...) formats.

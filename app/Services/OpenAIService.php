@@ -5,6 +5,14 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Deterministic provider failure (bad key, archived model, quota exhausted,
+ * request too large). Retrying the same provider cannot succeed.
+ */
+class AIProviderFatalException extends \RuntimeException
+{
+}
+
 class OpenAIService
 {
     protected ?string $apiKey = null;
@@ -13,6 +21,17 @@ class OpenAIService
     protected int $maxRetries;
     protected int $timeout;
     protected int $tpmBudget;
+
+    /** @var array<int, array{name:string,key:string,base:string,model:string}> */
+    protected array $providers = [];
+
+    /** Real reason for the most recent total failure (surfaced to users). */
+    protected ?string $lastError = null;
+
+    public function getLastError(): ?string
+    {
+        return $this->lastError;
+    }
 
     protected const SYSTEM_PROMPT = 'You are Brain, an expert Nigerian curriculum specialist and experienced classroom teacher. You generate high-quality, curriculum-aligned lesson plans, lesson notes, examination questions, and educational resources for Nigerian primary and secondary schools following NERDC/UBEC/WASSCE/NECO/JAMB standards.
 
@@ -65,14 +84,61 @@ Always respond with accurate, well-structured content tailored for teachers and 
         $this->maxRetries = max(1, (int) config('services.openai.max_retries', 3));
         $this->timeout = max(30, (int) config('services.openai.timeout', 120));
         $this->tpmBudget = max(0, (int) config('services.openai.tpm_budget', 0));
+
+        if (!empty($this->apiKey)) {
+            $this->providers[] = [
+                'name' => 'primary',
+                'key' => $this->apiKey,
+                'base' => rtrim($this->baseUrl, '/'),
+                'model' => $this->model,
+            ];
+        }
+
+        // Optional automatic failover provider (e.g. DeepSeek)
+        $fallbackKey = config('services.deepseek.api_key');
+        if (is_string($fallbackKey) && $fallbackKey !== '' && $fallbackKey !== $this->apiKey) {
+            $this->providers[] = [
+                'name' => 'fallback-deepseek',
+                'key' => $fallbackKey,
+                'base' => rtrim((string) config('services.deepseek.base_url', 'https://api.deepseek.com'), '/'),
+                'model' => (string) config('services.deepseek.model', 'deepseek-chat'),
+            ];
+        }
     }
 
     public function generate(string $prompt, bool $jsonMode = false, int $maxTokens = 16384, ?float $temperature = null): string
     {
-        if (empty($this->apiKey)) {
-            Log::error('API key not configured. Set OPENAI_API_KEY in .env');
+        if (empty($this->providers)) {
+            Log::error('No AI provider configured. Set OPENAI_API_KEY in .env');
             throw new \RuntimeException('API key is not configured. Please set OPENAI_API_KEY in your .env file.');
         }
+
+        $this->lastError = null;
+
+        foreach ($this->providers as $provider) {
+            $this->lastError = null;
+            $result = $this->attemptProvider($provider, $prompt, $jsonMode, $maxTokens, $temperature);
+            if ($result !== null) {
+                return $result;
+            }
+            // Provider failed — lastError now holds the real reason. Try next provider.
+            if (count($this->providers) > 1) {
+                Log::warning("AI provider '{$provider['name']}' failed, failing over", ['reason' => $this->lastError]);
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * Run the retry loop against one provider.
+     * Returns the cleaned response text, or null on total failure
+     * (with $this->lastError describing why).
+     */
+    protected function attemptProvider(array $provider, string $prompt, bool $jsonMode, int $maxTokens, ?float $temperature): ?string
+    {
+        // Fatal client errors are deterministic — retrying the same provider is pointless
+        static $fatalStatuses = [400, 401, 402, 403, 404, 413];
 
         $lastError = null;
         // Match the caller's jsonMode preference on attempt 1, alternate on retries
@@ -83,20 +149,21 @@ Always respond with accurate, well-structured content tailored for teachers and 
 
             try {
                 Log::debug('AI API Request', [
-                    'model' => $this->model,
+                    'provider' => $provider['name'],
+                    'model' => $provider['model'],
                     'json_mode' => $useJsonMode,
                     'prompt_length' => strlen($prompt),
                     'attempt' => $attempt,
                 ]);
 
-                $payload = $this->buildPayload($prompt, $useJsonMode, $maxTokens, $temperature ?? null);
+                $payload = $this->buildPayload($prompt, $useJsonMode, $maxTokens, $temperature ?? null, $provider);
 
                 $response = Http::timeout($this->timeout)
                     ->withHeaders([
                         'Content-Type' => 'application/json',
-                        'Authorization' => 'Bearer ' . $this->apiKey,
+                        'Authorization' => 'Bearer ' . $provider['key'],
                     ])
-                    ->post($this->baseUrl . '/v1/chat/completions', $payload);
+                    ->post($provider['base'] . '/v1/chat/completions', $payload);
 
                 if ($response->successful()) {
                     $data = $response->json();
@@ -125,7 +192,8 @@ Always respond with accurate, well-structured content tailored for teachers and 
                     $finishReason = $data['choices'][0]['finish_reason'] ?? 'unknown';
                     if ($finishReason === 'length') {
                         Log::warning('AI response truncated (finish_reason=length)', [
-                            'model' => $this->model,
+                            'provider' => $provider['name'],
+                            'model' => $provider['model'],
                             'json_mode' => $useJsonMode,
                             'prompt_tokens' => $usage['prompt_tokens'] ?? 'unknown',
                             'completion_tokens' => $usage['completion_tokens'] ?? 'unknown',
@@ -133,7 +201,8 @@ Always respond with accurate, well-structured content tailored for teachers and 
                         ]);
                     }
                     Log::debug('AI API Response', [
-                        'model' => $this->model,
+                        'provider' => $provider['name'],
+                        'model' => $provider['model'],
                         'json_mode' => $useJsonMode,
                         'response_length' => strlen($text),
                         'response_preview' => substr($text, 0, 500),
@@ -163,7 +232,9 @@ Always respond with accurate, well-structured content tailored for teachers and 
                 $statusCode = $response->status();
                 $errorBody = $response->body();
                 $errorJson = $response->json();
-                $errorMessage = $errorJson['error']['message'] ?? $errorBody;
+                $errorMessage = is_string($errorJson['error']['message'] ?? null)
+                    ? $errorJson['error']['message']
+                    : (is_string($errorJson['message'] ?? null) ? $errorJson['message'] : $errorBody);
 
                 if ($statusCode === 429) {
                     $lastError = new \RuntimeException('AI service is busy. Please wait 1 minute and try again.');
@@ -177,6 +248,12 @@ Always respond with accurate, well-structured content tailored for teachers and 
                     continue;
                 }
 
+                // Fatal/deterministic errors — retrying the same provider cannot help.
+                // Give up on this provider immediately so we can fail over to the next one.
+                if (in_array($statusCode, $fatalStatuses, true)) {
+                    throw new AIProviderFatalException('AI API returned status ' . $statusCode . ': ' . substr($errorMessage, 0, 300));
+                }
+
                 if ($statusCode >= 500) {
                     Log::warning("AI server error (attempt {$attempt}/{$this->maxRetries}): HTTP {$statusCode}");
                     if ($attempt < $this->maxRetries) {
@@ -187,35 +264,40 @@ Always respond with accurate, well-structured content tailored for teachers and 
                 }
 
                 Log::error('AI API HTTP error', [
+                    'provider' => $provider['name'],
                     'status' => $statusCode,
                     'body' => substr($errorBody, 0, 2000),
                 ]);
 
                 throw new \RuntimeException('AI API returned status ' . $statusCode . ': ' . substr($errorMessage, 0, 500));
 
+            } catch (AIProviderFatalException $e) {
+                $this->lastError = $e->getMessage();
+                Log::error("AI provider '{$provider['name']}' fatal error, skipping retries", ['error' => $this->lastError]);
+                return null;
             } catch (\RuntimeException $e) {
                 $lastError = $e;
                 if ($attempt >= $this->maxRetries) {
-                    Log::error('AI API failed after all retries', ['error' => $e->getMessage()]);
-                    return '';
+                    Log::error("AI provider '{$provider['name']}' failed after all retries", ['error' => $e->getMessage()]);
+                    break;
                 }
                 Log::warning("AI API attempt {$attempt} failed: {$e->getMessage()}");
             } catch (\Exception $e) {
                 $lastError = $e;
                 if ($attempt >= $this->maxRetries) {
-                    Log::error('AI API connection error after all retries', [
+                    Log::error("AI provider '{$provider['name']}' connection error after all retries", [
                         'error' => $e->getMessage(),
-                        'trace' => $e->getTraceAsString(),
                     ]);
-                    return '';
+                    break;
                 }
                 Log::warning("AI connection attempt {$attempt} failed: {$e->getMessage()}, retrying...");
                 sleep($attempt * 2);
             }
         }
 
-        Log::error('AI API request failed after all retries', ['error' => $lastError?->getMessage() ?? 'Unknown error']);
-        return '';
+        $this->lastError = $lastError?->getMessage() ?? 'Unknown AI provider error';
+        Log::error('AI provider exhausted', ['provider' => $provider['name'], 'error' => $this->lastError]);
+        return null;
     }
 
     public function generateStream(string $prompt, callable $onChunk, bool $jsonMode = false): void
@@ -267,12 +349,15 @@ Always respond with accurate, well-structured content tailored for teachers and 
         }
     }
 
-    protected function buildPayload(string $prompt, bool $jsonMode, int $maxTokens, ?float $temperature = null): array
+    protected function buildPayload(string $prompt, bool $jsonMode, int $maxTokens, ?float $temperature = null, ?array $provider = null): array
     {
         $maxTokens = $this->capMaxTokensToBudget($prompt, $maxTokens);
 
+        $model = $provider['model'] ?? $this->model;
+        $base = $provider['base'] ?? $this->baseUrl;
+
         $payload = [
-            'model' => $this->model,
+            'model' => $model,
             'messages' => [
                 ['role' => 'system', 'content' => self::SYSTEM_PROMPT],
                 ['role' => 'user', 'content' => $prompt],
@@ -280,6 +365,12 @@ Always respond with accurate, well-structured content tailored for teachers and 
             'temperature' => $temperature ?? 0.85,
             'max_tokens' => $maxTokens,
         ];
+
+        // Reasoning models burn completion tokens on hidden reasoning, which can
+        // truncate the JSON payload. Minimise reasoning effort where supported.
+        if (str_contains($model, 'gpt-oss') && str_contains($base, 'groq')) {
+            $payload['reasoning_effort'] = 'low';
+        }
 
         if ($jsonMode) {
             $payload['response_format'] = ['type' => 'json_object'];
