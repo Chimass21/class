@@ -13,10 +13,22 @@ if (!isset($_SESSION['fixpin'])) {
 $PIN = $_SESSION['fixpin'];
 $msg = ''; $ok = false;
 
+/* Find the app root by locating .env here or up to 4 levels above
+   (handles both docroot=repo-root and docroot=public/ layouts). */
+function findAppRoot() {
+    $dir = __DIR__;
+    for ($i = 0; $i < 5; $i++) {
+        if (file_exists($dir.'/.env')) return $dir;
+        $parent = dirname($dir);
+        if ($parent === $dir) break;
+        $dir = $parent;
+    }
+    return null;
+}
 function envLines($path) { return file_exists($path) ? file($path, FILE_IGNORE_NEW_LINES) : []; }
 function maskKey($k) { $k = trim($k); return strlen($k) > 12 ? substr($k,0,8).'...'.substr($k,-4) : '(short?)'; }
-function currentVals() {
-    foreach (envLines('.env') as $l) {
+function currentVals($root) {
+    foreach (envLines($root.'/.env') as $l) {
         if (preg_match('/^OPENAI_BASE_URL=(.*)$/',$l,$m)) $base=trim($m[1]);
         if (preg_match('/^OPENAI_MODEL=(.*)$/',$l,$m)) $model=trim($m[1]);
         if (preg_match('/^OPENAI_API_KEY=(.*)$/',$l,$m)) $key=trim($m[1]);
@@ -24,20 +36,25 @@ function currentVals() {
     return [$base ?? '(unset)', $model ?? '(unset)', $key ?? ''];
 }
 
+$ROOT = findAppRoot();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $key = trim($_POST['key'] ?? '');
     $pin = trim($_POST['pin'] ?? '');
     if ($pin !== $PIN) {
         $msg = '<b style="color:red">Wrong PIN. Refresh page to get a new one.</b>';
+    } elseif ($ROOT === null) {
+        $msg = '<b style="color:red">Could not find .env in this folder or any parent (searched 5 levels up). Upload this file into your site folders and retry.</b>';
     } elseif (!str_starts_with($key, 'gsk_')) {
         $msg = '<b style="color:red">That does not look like a Groq key (must start with gsk_). Get one at console.groq.com/keys</b>';
     } else {
+        $envFile = $ROOT.'/.env';
         // 1. Backup .env
-        $bak = '.env.bak.'.date('Ymd_His');
-        if (file_exists('.env')) copy('.env', $bak);
+        $bak = $ROOT.'/.env.bak.'.date('Ymd_His');
+        if (file_exists($envFile)) copy($envFile, $bak);
 
         // 2. Rewrite AI lines
-        $lines = envLines('.env');
+        $lines = envLines($envFile);
         $want = [
             'OPENAI_API_KEY'   => $key,
             'OPENAI_BASE_URL'  => 'https://api.groq.com/openai',
@@ -53,12 +70,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         foreach ($want as $k => $v) { if (empty($seen[$k])) $lines[] = "$k=$v"; }
-        file_put_contents('.env', implode("\n", $lines)."\n");
+        file_put_contents($envFile, implode("\n", $lines)."\n");
 
         // 3. Clear caches (best effort)
         $cleared = [];
         foreach (['bootstrap/cache/config.php','bootstrap/cache/routes-v7.php','bootstrap/cache/events.php','bootstrap/cache/packages.php','bootstrap/cache/services.php'] as $c) {
-            if (file_exists($c)) { @unlink($c); $cleared[] = basename($c); }
+            if (file_exists($ROOT.'/'.$c)) { @unlink($ROOT.'/'.$c); $cleared[] = basename($c); }
         }
 
         // 4. REAL TEST against Groq
@@ -83,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($http === 200 && trim($reply) !== '') {
             $ok = true;
             $msg = '<b style="color:#0a0">SUCCESS!</b> Groq replied: "'.htmlspecialchars(trim($reply)).'".'
-                 . '<br>.env updated ('.htmlspecialchars($bak).' backup created).'
+                 . '<br>.env updated at <code>'.htmlspecialchars($ROOT.'/.env').'</code> (backup: '.htmlspecialchars(basename($bak)).').'
                  . ($cleared ? '<br>Caches cleared: '.htmlspecialchars(implode(', ', $cleared)) : '')
                  . '<br><br><b>This fixer deleted itself. Your lesson notes will generate now.</b>';
             @unlink(__FILE__);
@@ -94,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
-[$cb, $cm, $ck] = currentVals();
+[$cb, $cm, $ck] = $ROOT ? currentVals($ROOT) : ['(no .env found)','(no .env found)',''];
 ?><!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>Brain4 AI Fixer</title>
 <style>body{font-family:system-ui;background:#0f172a;color:#e2e8f0;display:flex;justify-content:center;padding:40px}div{max-width:520px;width:100%}input{width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #334155;background:#1e293b;color:#fff;box-sizing:border-box}button{background:#22c55e;color:#04220f;border:none;padding:12px 28px;border-radius:8px;font-weight:bold;font-size:16px;cursor:pointer}pre{background:#1e293b;padding:10px;border-radius:8px;overflow:auto}</style>
