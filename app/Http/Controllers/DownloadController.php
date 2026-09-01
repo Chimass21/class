@@ -103,7 +103,7 @@ class DownloadController extends Controller
     protected function buildGradedScriptHtml(array $exam, array $result): string
     {
         $db = JsonDb::get();
-        $schoolName = $db['schoolConfig']['name'] ?? 'ClassPortal Academy';
+        $schoolName = $db['schoolConfig']['name'] ?? 'Covenant Foundation School';
         $schoolAddress = $db['schoolConfig']['address'] ?? '';
         $schoolMotto = $db['schoolConfig']['motto'] ?? '';
 

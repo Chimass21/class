@@ -307,7 +307,7 @@ class JsonDb {
             'questionSets' => [],
             'importLogs' => [],
             'subjects' => ['Mathematics','Physics','Chemistry','Biology','English Language','Accounting','Economics','Government','ICT','Literature','Commerce','Agriculture','Civic Education','Social Studies','Intermediate Science','Cultural and Creative Arts (CCA)','Nigerian History','Artificial Intelligence','Phonics','Vocational Studies','Physical and Health Education (PHE)','Coding','Verbal Reasoning','Craft and Art','Home Economics','Business Studies','Basic Science','Basic Technology','Geography','History','Christian Religious Studies','Islamic Studies','French','Yoruba','Igbo','Hausa','Music','Art & Design','Literacy','Numeracy'],
-            'schoolConfig' => ['name' => 'ClassPortal Academy', 'address' => '', 'motto' => 'Excellence in Education'],
+            'schoolConfig' => ['name' => 'Covenant Foundation School', 'address' => '', 'motto' => 'Excellence in Education'],
         ];
     }
 

@@ -38,7 +38,7 @@ class AIController extends Controller
 
             $user = Session::get('user');
             $teacherName = $data['teacherName'] ?? $user['name'] ?? 'Teacher';
-            $schoolName = $data['schoolName'] ?? 'ClassPortal Academy';
+            $schoolName = $data['schoolName'] ?? 'Covenant Foundation School';
             $duration = $data['duration'] ?? '40 Minutes';
             $ageRange = CurriculumData::getAgeRange($data['class']);
             $scheme = CurriculumData::getSchemeOfWork($data['subject'], $data['class'], $data['term']);
