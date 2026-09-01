@@ -32,7 +32,7 @@ class LessonPlanController extends Controller
         $plan = [
             'id' => 'plan_' . uniqid(),
             'teacherId' => $user['id'] ?? 'unknown',
-            'schoolName' => $request->schoolName ?? 'ClassPortal Academy',
+            'schoolName' => $request->schoolName ?? 'Covenant Foundation School',
             'teacherName' => $user['name'] ?? 'Teacher',
             'subject' => $request->subject,
             'classLevel' => $request->class,
