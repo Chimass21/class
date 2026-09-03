@@ -4,5 +4,16 @@ deployment:
     - echo "Starting deployment for Covenant Foundation School"
     - export DEPLOYPATH="/home/rmqpvpsg/public_html"
     - echo "Deployment path ready"
-    - /usr/local/bin/php artisan migrate --force
-    - /usr/local/bin/php artisan optimize:clear
+    # --- Critical: vendor not tracked ( .gitignore:1 vendor/ ) - must install on server ---
+    - if [ ! -f vendor/autoload.php ]; then echo "Installing composer dependencies..."; /opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader --no-interaction || /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction || composer install --no-dev --optimize-autoloader --no-interaction || php composer.phar install --no-dev --optimize-autoloader --no-interaction; else echo "vendor exists"; fi
+    # --- Env file not tracked ( .gitignore:9 .env* ) - create from example if missing ---
+    - if [ ! -f .env ]; then echo ".env missing - creating from .env.example"; cp .env.example .env; /usr/local/bin/php artisan key:generate --force || php artisan key:generate --force; fi
+    # --- Ensure writable dirs (cPanel resets perms on deploy) ---
+    - mkdir -p storage/framework/cache storage/framework/views storage/framework/sessions bootstrap/cache database
+    - chmod -R 775 storage bootstrap/cache || chmod -R 755 storage bootstrap/cache
+    # --- SQLite fallback (create file if using sqlite, else will be ignored) ---
+    - if grep -q "DB_CONNECTION=sqlite" .env; then touch database/database.sqlite; echo "sqlite file ready"; fi
+    - /usr/local/bin/php artisan migrate --force || php artisan migrate --force
+    - /usr/local/bin/php artisan optimize:clear || php artisan optimize:clear
+    - /usr/local/bin/php artisan config:cache || php artisan config:cache
+    - echo "Deployment complete - check storage/logs/laravel.log if 500 persists"
