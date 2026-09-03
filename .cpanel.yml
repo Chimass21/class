@@ -1,0 +1,8 @@
+---
+deployment:
+  tasks:
+    - echo "Starting deployment for Covenant Foundation School"
+    - export DEPLOYPATH="/home/rmqpvpsg/public_html"
+    - echo "Deployment path ready"
+    - /usr/local/bin/php artisan migrate --force
+    - /usr/local/bin/php artisan optimize:clear
