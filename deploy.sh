@@ -204,6 +204,19 @@ if [ ! -f .env ] && [ -f .env.example ]; then
     php artisan key:generate --force 2>&1 || /usr/local/bin/php artisan key:generate --force 2>&1 || true
 fi
 
+# Ensure browser title is Cfschool (APP_NAME)
+if [ -f .env ]; then
+    if grep -q '^APP_NAME=Brain4' .env || grep -q '^APP_NAME=ClassPortal' .env; then
+        log "  -> Updating APP_NAME to Cfschool for browser title..."
+        sed -i 's/^APP_NAME=.*/APP_NAME=Cfschool/' .env
+        log "  -> APP_NAME set to Cfschool"
+    elif ! grep -q '^APP_NAME=Cfschool' .env; then
+        # Ensure any other old name is corrected
+        sed -i 's/^APP_NAME=.*/APP_NAME=Cfschool/' .env 2>/dev/null || echo "APP_NAME=Cfschool" >> .env
+        log "  -> APP_NAME normalized to Cfschool"
+    fi
+fi
+
 # Ensure writable dirs (cPanel resets perms)
 mkdir -p storage/logs storage/framework/cache storage/framework/views storage/framework/sessions bootstrap/cache database 2>&1 || true
 chmod -R 775 storage bootstrap/cache 2>&1 || chmod -R 755 storage bootstrap/cache 2>&1 || true

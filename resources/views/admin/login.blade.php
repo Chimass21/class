@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - ClassPortal</title>
+    <title>Admin Login - Cfschool</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
@@ -15,7 +15,7 @@
         <div class="text-center mb-8">
             <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl mx-auto shadow-lg shadow-indigo-500/30">CP</div>
             <h1 class="text-2xl font-bold text-white mt-4">Admin Console</h1>
-            <p class="text-sm text-slate-400 mt-1">ClassPortal Administration</p>
+            <p class="text-sm text-slate-400 mt-1">Cfschool Administration</p>
         </div>
 
         <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
@@ -49,7 +49,7 @@
             </form>
         </div>
 
-        <p class="text-center text-xs text-slate-600 mt-6">&copy; {{ date('Y') }} ClassPortal. All rights reserved.</p>
+        <p class="text-center text-xs text-slate-600 mt-6">&copy; {{ date('Y') }} Cfschool. All rights reserved.</p>
     </div>
 
 </body>
