@@ -184,13 +184,41 @@ if [ -f .env ]; then
     fi
 fi
 
-# Laravel post-deploy tasks
+# Laravel post-deploy tasks - ensure vendor exists ( not tracked per .gitignore:1 )
+if [ ! -f vendor/autoload.php ]; then
+    log "  -> vendor missing - installing composer deps..."
+    /opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader --no-interaction 2>&1 || \
+    /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction 2>&1 || \
+    composer install --no-dev --optimize-autoloader --no-interaction 2>&1 || \
+    php composer.phar install --no-dev --optimize-autoloader --no-interaction 2>&1 || \
+    log "  -> composer install failed - check composer availability"
+else
+    log "  -> vendor exists - updating deps..."
+    /opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader --no-interaction 2>&1 || true
+fi
+
+# Ensure .env exists ( not tracked per .gitignore:9 )
+if [ ! -f .env ] && [ -f .env.example ]; then
+    log "  -> .env missing - creating from .env.example"
+    cp .env.example .env
+    php artisan key:generate --force 2>&1 || /usr/local/bin/php artisan key:generate --force 2>&1 || true
+fi
+
+# Ensure writable dirs (cPanel resets perms)
+mkdir -p storage/logs storage/framework/cache storage/framework/views storage/framework/sessions bootstrap/cache database 2>&1 || true
+chmod -R 775 storage bootstrap/cache 2>&1 || chmod -R 755 storage bootstrap/cache 2>&1 || true
+touch storage/logs/laravel.log 2>&1 || true
+if grep -q "DB_CONNECTION=sqlite" .env 2>/dev/null; then
+    touch database/database.sqlite 2>&1 || true
+    log "  -> sqlite file ready"
+fi
+
 if [ -f artisan ]; then
     log "  -> Running migrations..."
-    php artisan migrate --force 2>&1 || log "  -> Migration skipped (non-fatal)."
+    php artisan migrate --force 2>&1 || /usr/local/bin/php artisan migrate --force 2>&1 || log "  -> Migration skipped (non-fatal)."
     
     log "  -> Clearing cache..."
-    php artisan optimize:clear 2>&1 || log "  -> Cache clear skipped (non-fatal)."
+    php artisan optimize:clear 2>&1 || /usr/local/bin/php artisan optimize:clear 2>&1 || log "  -> Cache clear skipped (non-fatal)."
     
     log "  -> Rebuilding frontend assets..."
     if command -v npm > /dev/null 2>&1; then
@@ -200,7 +228,8 @@ if [ -f artisan ]; then
     fi
     
     log "  -> Generating optimized cache..."
-    php artisan optimize 2>&1 || log "  -> Optimize skipped (non-fatal)."
+    php artisan optimize 2>&1 || /usr/local/bin/php artisan optimize 2>&1 || log "  -> Optimize skipped (non-fatal)."
+    php artisan config:cache 2>&1 || true
 else
     log "  -> No artisan found. Skipping Laravel post-deploy tasks."
 fi
