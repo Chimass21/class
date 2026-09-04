@@ -438,20 +438,11 @@ class AIController extends Controller
                 if ($matches === 0) { $offTopicCount++; }
             }
             if ($offTopicCount > 0) {
-                Log::warning("{$offTopicCount} off-topic questions detected — prepending topic to stems", [
+                Log::warning("{$offTopicCount} off-topic questions detected", [
                     'topic' => $data['topic'],
                     'total' => count($questionItems),
                 ]);
-                foreach ($questionItems as $i => $q) {
-                    $qText = strtolower($q['question'] ?? '');
-                    $matches = 0;
-                    foreach ($topicKeywords as $kw) {
-                        if (str_contains($qText, $kw)) { $matches++; }
-                    }
-                    if ($matches === 0) {
-                        $questionItems[$i]['question'] = 'In the context of ' . $data['topic'] . ', ' . lcfirst(ltrim($q['question'] ?? '', '?.,;:!'));
-                    }
-                }
+                // Do NOT prepend topic/subtopic — user wants just question + options, no cumbersome prefix
             }
 
             // Shuffle answers for better distribution
@@ -1363,11 +1354,11 @@ You are an examination expert. Generate {$askCount} objective (multiple-choice) 
 {$physicsInstructions}
 {$chemistryInstructions}
 
-SUBJECT: {$subject} — Every question MUST be about {$subject} content.
-TOPIC: {$topic} — Every question MUST test knowledge specifically about "{$topic}" within {$subject}.
-CLASS: {$class} — Match difficulty to {$class} per standard curriculum for that class level.
+SUBJECT: {$subject}
+TOPIC: {$topic}
+CLASS: {$class} — Match difficulty to {$class} per standard curriculum.
 
-CRITICAL RULE — EVERY question stem MUST contain the word "{$topic}" or a direct reference to a specific subtopic within {$topic}. If the stem doesn't mention {$topic}, the question is OFF-TOPIC and will be rejected.
+Write each question stem directly — do NOT add "Topic:" or "Subtopic:" labels, headers, or prefixes before the question. Just write the question and its 4 options. The question should be about the topic, but do not repeat the topic name as a header.
 
 VARY QUESTION STYLES across the set. At most 2 WH-word starters per 10 questions. Include:
 - Directives (State/Define/List)
@@ -2029,7 +2020,7 @@ PROMPT;
             $simplePrompt = "You are an exam expert for {$subject} ({$class} level). "
                 . "CRITICAL: Generate {$count} multiple-choice questions that DIRECTLY TEST \"{$topic}\" in {$subject} for {$class} level.{$subtopicLine}\n\n"
                 . "SUBJECT: {$subject}. TOPIC: \"{$topic}\". CLASS: {$class}.\n"
-                . "EVERY question stem MUST contain the exact word \"{$topic}\" or a direct subtopic reference. Questions without {$topic} in the stem are OFF-TOPIC.\n\n"
+                . "Write each question directly without adding \"Topic:\" or \"Subtopic:\" prefixes. Do not add headers before the question.\n\n"
                 . "Vary question styles — use at most 2 'What/Why/How' questions per 10. Include: definitions, completions (___), scenarios, classifications, comparisons, negatives (EXCEPT), calculations (if applicable), and true/false.\n\n"
                 . "Return ONLY a JSON array. Each item: {\"id\":number,\"question\":\"stem that mentions {$topic}\",\"A\":\"opt\",\"B\":\"opt\",\"C\":\"opt\",\"D\":\"opt\",\"answer\":\"A\"}.\n\n"
                 . "Example: [{\"id\":1,\"question\":\"The correct definition of {$topic} is:\",\"A\":\"opt1\",\"B\":\"opt2\",\"C\":\"opt3\",\"D\":\"opt4\",\"answer\":\"A\"}]";
@@ -2607,10 +2598,9 @@ PROMPT;
              . "PREVIOUS ATTEMPT REJECTED — QUESTIONS WERE OFF-TOPIC OR TOO SIMPLE.\n\n"
              . "STRICT RULES — FOLLOW EVERY ONE:\n"
              . "- SUBJECT: {$subject}. TOPIC: \"{$topic}\". CLASS: {$class}.\n"
-             . "- EVERY question stem MUST contain the exact word \"{$topic}\" or one of its key subtopics.\n"
-             . "- Every question must test knowledge specifically about {$topic} in {$subject}.\n"
-             . "- If the stem doesn't mention {$topic}, the question is REJECTED.\n"
-             . "- Do not add phrases like \"in the Nigerian context\" or city names.\n"
+              . "- Write each question directly without adding \"Topic:\" or \"Subtopic:\" prefixes.\n"
+              . "- Every question must test knowledge specifically about {$topic} in {$subject}.\n"
+              . "- Do not add phrases like \"in the Nigerian context\" or city names.\n"
              . "- Vary styles: directives (State/Define/List), fill-the-blank (___), scenarios, classifications, compare/contrast, cause-effect, All-EXCEPT, calculations, true/false.\n"
              . "- At most 2 WH-word starters per 10 questions.\n"
              . "- 4 UNIQUE options (A/B/C/D), exactly ONE correct answer.\n"
