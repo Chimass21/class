@@ -130,6 +130,7 @@ Route::prefix('api')->group(function () {
     Route::delete('/lesson-notes/{id}', [AIController::class, 'deleteLessonNote']);
     Route::delete('/lesson-plans/{id}', [AIController::class, 'deleteLessonPlan']);
     Route::delete('/questions/sets/{id}', [AIController::class, 'deleteQuestionSet']);
+    Route::post('/share/lesson-plan/{id}/email', [DownloadController::class, 'emailLessonPlan']);
 
     // CSV Import
     Route::get('/csv-import/template', [CsvImportController::class, 'downloadTemplate']);

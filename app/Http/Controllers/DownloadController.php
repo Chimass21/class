@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\JsonDb;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Shared\Html;
@@ -117,6 +118,41 @@ class DownloadController extends Controller
             return $this->downloadDocx($html, 'graded_script_' . $resultId);
         }
         return abort(400, 'Unsupported format');
+    }
+
+    public function emailLessonPlan(Request $request, $id)
+    {
+        $request->validate(['email' => 'required|email']);
+        $user = \Illuminate\Support\Facades\Session::get('user');
+        if (!$user) return response()->json(['success' => false, 'error' => 'Unauthorized'], 401);
+        \App\Helpers\JsonDb::init();
+        $db = \App\Helpers\JsonDb::get();
+        $plan = null;
+        foreach ($db['lessonPlans'] ?? [] as $p) { if ($p['id'] === $id) { $plan = $p; break; } }
+        if (!$plan) return response()->json(['success' => false, 'error' => 'Lesson plan not found'], 404);
+        if (($user['role'] ?? '') !== 'admin' && ($plan['teacherId'] ?? '') !== ($user['id'] ?? '')) {
+            return response()->json(['success' => false, 'error' => 'Unauthorized'], 403);
+        }
+        $tmpFile = $this->generatePlanDocxFile($plan);
+        $filename = preg_replace('/[^a-z0-9]+/i', '_', $plan['topic'] ?? 'lesson_plan');
+        $filename = trim($filename, '_') ?: 'lesson_plan';
+        $filename .= '.docx';
+        try {
+            Mail::send([], [], function ($message) use ($request, $plan, $tmpFile, $filename) {
+                $message->to($request->input('email'))
+                    ->subject('Lesson Plan: ' . ($plan['topic'] ?? 'Lesson Plan') . ' - Cfschool')
+                    ->attach($tmpFile, ['as' => $filename, 'mime' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
+                    ->setBody('Please find the lesson plan attached in DOCX tabular format (not a link).', 'text/plain');
+                $fromAddr = config('mail.from.address', 'noreply@cfschool.com');
+                $fromName = config('mail.from.name', 'Cfschool');
+                if ($fromAddr) $message->from($fromAddr, $fromName);
+            });
+            @unlink($tmpFile);
+            return response()->json(['success' => true, 'message' => 'Lesson plan sent via email as DOCX attachment']);
+        } catch (\Exception $e) {
+            @unlink($tmpFile);
+            return response()->json(['success' => false, 'error' => 'Email failed: ' . $e->getMessage()], 500);
+        }
     }
 
     protected function getStudentClassLevel(\Illuminate\Support\Collection|array $users, string $studentId): string
@@ -439,7 +475,7 @@ class DownloadController extends Controller
         return mb_substr($trimmed, 0, $lastSpace ?: $limit) . '...';
     }
 
-    protected function downloadPlanDocx(array $plan, string $filename)
+    protected function generatePlanDocxFile(array $plan): string
     {
         $topic = $plan['topic'] ?? 'Lesson Plan';
         $subject = $plan['subject'] ?? '';
@@ -608,6 +644,12 @@ class DownloadController extends Controller
         $tempFile = tempnam(sys_get_temp_dir(), 'docx');
         $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
         $objWriter->save($tempFile);
+        return $tempFile;
+    }
+
+    protected function downloadPlanDocx(array $plan, string $filename)
+    {
+        $tempFile = $this->generatePlanDocxFile($plan);
         return response()->download($tempFile, $filename . '.docx')->deleteFileAfterSend(true);
     }
 

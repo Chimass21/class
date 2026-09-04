@@ -1067,7 +1067,7 @@ async function sharePlan() {
     const url = '/api/download/lesson-plan/' + currentPlanId + '/docx';
     const plan = teacherData.plans.find(p => p.id === currentPlanId);
     const title = plan ? plan.topic : 'Lesson Plan';
-    // Direct DOCX file share — recipient sees file immediately (tabular, not a link)
+    // 1) Direct DOCX file share — recipients on WhatsApp/Email see the file immediately (tabular, not a link)
     try {
         const res = await fetch(url, { credentials: 'same-origin' });
         if (res.ok) {
@@ -1080,14 +1080,29 @@ async function sharePlan() {
             if (navigator.share) {
                 try { await navigator.share({ files: [file], title: title }); return; } catch(e) {}
             }
-            // Fallback for browsers without file-share: download file so user can attach directly to WhatsApp/Email
-            // This ensures recipient gets the DOCX file itself, not a link to the website
+            // Browser has no file-share: offer direct email send (recipient gets file, not link) or download for WhatsApp manual attach
+            const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+            if (!isMobile) {
+                const action = prompt('Direct file share to WhatsApp/Email works on mobile.\nOn desktop, choose:\n1 = Send via Email (recipient gets DOCX file directly, not a link)\n2 = Download DOCX to attach manually to WhatsApp/Email\n\nEnter 1 or 2:', '1');
+                if (action === '1') {
+                    const email = prompt('Enter recipient email address:');
+                    if (email && email.includes('@')) {
+                        const fd = await fetch('/api/share/lesson-plan/' + currentPlanId + '/email', {
+                            method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                            body: JSON.stringify({ email: email.trim() })
+                        });
+                        const jd = await fd.json().catch(() => ({}));
+                        if (fd.ok && jd.success) { alert('DOCX file sent directly to ' + email + ' — recipient will see the file attachment, not a link.'); return; }
+                        else { alert('Email failed: ' + (jd.error || fd.statusText) + '\nFalling back to download.'); }
+                    } else if (email) { alert('Invalid email. Downloading instead.'); }
+                }
+            }
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
             a.download = title.replace(/[^a-z0-9]/gi,'_').substring(0,30) + '.docx';
             document.body.appendChild(a); a.click(); document.body.removeChild(a);
             setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-            alert('Direct file share not supported on this browser. DOCX tabular file downloaded.\n\nPlease open WhatsApp or Email and attach the file from your Downloads folder.\nThe recipient will receive the DOCX file immediately — not a link.');
+            alert('DOCX tabular file downloaded.\n\nPlease open WhatsApp or Email and attach the file from your Downloads.\nThe recipient will receive the DOCX file immediately — not a link to the website.\n\nTip: On mobile, tap Share again and choose WhatsApp/Email from the system sheet to send the file directly without downloading.');
             return;
         }
     } catch(e) { console.log('File share failed', e); }
