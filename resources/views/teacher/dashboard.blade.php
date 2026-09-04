@@ -1062,10 +1062,32 @@ function copyPlanContent() {
     const text = document.getElementById('plan-content').innerText;
     navigator.clipboard.writeText(text).then(() => alert('Lesson plan copied!')).catch(() => alert('Failed to copy.'));
 }
-function sharePlan() {
-    const text = document.getElementById('plan-content').innerText;
-    if (navigator.share) navigator.share({ title: 'Lesson Plan', text }).catch(() => {});
-    else { copyPlanContent(); alert('Content copied for sharing!'); }
+async function sharePlan() {
+    if (!currentPlanId) return;
+    const url = '/api/download/lesson-plan/' + currentPlanId + '/docx';
+    // Try Web Share API with files (DOCX tabular) — keeps table layout intact, not scattered text
+    try {
+        if (navigator.canShare) {
+            const res = await fetch(url, { credentials: 'same-origin' });
+            if (res.ok) {
+                const blob = await res.blob();
+                const file = new File([blob], 'lesson-plan-' + currentPlanId + '.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+                if (navigator.canShare({ files: [file] })) {
+                    await navigator.share({ files: [file], title: 'Lesson Plan - Cfschool', text: 'Lesson plan in DOCX tabular format' });
+                    return;
+                }
+            }
+        } else if (navigator.share) {
+            const res = await fetch(url, { credentials: 'same-origin' });
+            if (res.ok) {
+                const blob = await res.blob();
+                const file = new File([blob], 'lesson-plan-' + currentPlanId + '.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+                try { await navigator.share({ files: [file], title: 'Lesson Plan - Cfschool' }); return; } catch(e) {}
+            }
+        }
+    } catch(e) { console.log('Share with file failed, falling back', e); }
+    // Fallback: download DOCX tabular file directly — user can then share via any platform (WhatsApp, Email, etc.)
+    window.open(url, '_blank');
 }
 
 // ====== LESSON NOTE ======
