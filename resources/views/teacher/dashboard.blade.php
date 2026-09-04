@@ -1065,29 +1065,40 @@ function copyPlanContent() {
 async function sharePlan() {
     if (!currentPlanId) return;
     const url = '/api/download/lesson-plan/' + currentPlanId + '/docx';
-    // Try Web Share API with files (DOCX tabular) — keeps table layout intact, not scattered text
+    const absoluteUrl = window.location.origin + url;
+    const plan = teacherData.plans.find(p => p.id === currentPlanId);
+    const title = plan ? plan.topic : 'Lesson Plan';
+    // 1) Try direct DOCX file share — system sheet shows WhatsApp, Email, etc. with file attached (tabular, not scattered)
     try {
-        if (navigator.canShare) {
-            const res = await fetch(url, { credentials: 'same-origin' });
-            if (res.ok) {
-                const blob = await res.blob();
-                const file = new File([blob], 'lesson-plan-' + currentPlanId + '.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-                if (navigator.canShare({ files: [file] })) {
-                    await navigator.share({ files: [file], title: 'Lesson Plan - Cfschool', text: 'Lesson plan in DOCX tabular format' });
-                    return;
-                }
+        const res = await fetch(url, { credentials: 'same-origin' });
+        if (res.ok) {
+            const blob = await res.blob();
+            const file = new File([blob], title.replace(/[^a-z0-9]/gi,'_').substring(0,30) + '.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({ files: [file], title: title + ' - Cfschool', text: title + ' - DOCX tabular format' });
+                return;
             }
-        } else if (navigator.share) {
-            const res = await fetch(url, { credentials: 'same-origin' });
-            if (res.ok) {
-                const blob = await res.blob();
-                const file = new File([blob], 'lesson-plan-' + currentPlanId + '.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-                try { await navigator.share({ files: [file], title: 'Lesson Plan - Cfschool' }); return; } catch(e) {}
+            if (navigator.share) {
+                try { await navigator.share({ files: [file], title: title }); return; } catch(e) {}
             }
         }
-    } catch(e) { console.log('Share with file failed, falling back', e); }
-    // Fallback: download DOCX tabular file directly — user can then share via any platform (WhatsApp, Email, etc.)
-    window.open(url, '_blank');
+    } catch(e) { console.log('File share failed', e); }
+    // 2) Fallback: share link via system sheet (also shows WhatsApp/Email)
+    try {
+        if (navigator.share) {
+            await navigator.share({ title: title, text: title + ' - Download DOCX tabular lesson plan', url: absoluteUrl });
+            return;
+        }
+    } catch(e) {}
+    // 3) Final fallback: let user choose WhatsApp or Email directly
+    const choice = prompt('Share Lesson Plan DOCX:\n1 = WhatsApp (opens wa.me with link)\n2 = Email (opens mail app)\n3 = Download DOCX\n\nEnter 1, 2 or 3:', '1');
+    if (choice === '1') {
+        window.open('https://wa.me/?text=' + encodeURIComponent(title + ' - Lesson Plan DOCX tabular: ' + absoluteUrl), '_blank');
+    } else if (choice === '2') {
+        window.location.href = 'mailto:?subject=' + encodeURIComponent(title + ' - Lesson Plan') + '&body=' + encodeURIComponent('Download the tabular DOCX lesson plan:\n' + absoluteUrl + '\n\nIf the link requires login, download from the dashboard and forward the file.');
+    } else {
+        window.open(url, '_blank');
+    }
 }
 
 // ====== LESSON NOTE ======
