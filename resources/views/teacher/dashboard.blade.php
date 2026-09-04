@@ -161,7 +161,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div class="space-y-4">
                             <h3 class="text-lg font-bold text-slate-900">Generate Curriculum Lesson Plan</h3>
-                            <p class="text-sm text-slate-500">Create professional Nigerian curriculum-based lesson plans in tabular A4 format.</p>
+                            <p class="text-sm text-slate-500">Create professional curriculum-based lesson plans in tabular A4 format.</p>
                             <form id="lesson-plan-form" class="space-y-3">
                                 <div class="grid grid-cols-2 gap-3">
                                     <div>
@@ -241,7 +241,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div class="space-y-4">
                             <h3 class="text-lg font-bold text-slate-900">Generate Lesson Note</h3>
-                            <p class="text-sm text-slate-500">Create detailed, comprehensive lesson notes aligned with the Nigerian curriculum.</p>
+                            <p class="text-sm text-slate-500">Create detailed, comprehensive lesson notes aligned with the standard curriculum.</p>
                             <form id="lesson-note-form" class="space-y-3">
                                 <div class="grid grid-cols-2 gap-3">
                                     <div>
@@ -450,9 +450,9 @@
                                         </thead>
                                         <tbody>
                                             <tr class="bg-white text-slate-600">
-                                                <td class="p-2 border border-slate-200 font-medium text-slate-800">What is the capital of Nigeria?</td>
-                                                <td class="p-2 border border-slate-200">Lagos</td>
-                                                <td class="p-2 border border-slate-200">Abuja</td>
+                                                <td class="p-2 border border-slate-200 font-medium text-slate-800">What is the capital of France?</td>
+                                                <td class="p-2 border border-slate-200">London</td>
+                                                <td class="p-2 border border-slate-200">Paris</td>
                                                 <td class="p-2 border border-slate-200">Kano</td>
                                                 <td class="p-2 border border-slate-200">Ibadan</td>
                                                 <td class="p-2 border border-slate-200 font-bold text-blue-600">B</td>

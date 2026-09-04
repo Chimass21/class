@@ -244,7 +244,7 @@ class AIController extends Controller
                 $simplePrompt = "Write a detailed lesson note about \"{$data['topic']}\" in {$data['subject']} for {$data['class']}. "
                     . "Analyze the topic first, then choose headings that are naturally relevant. Do NOT force sections that don't belong. "
                     . "Include topic, introduction, and main HTML content as the body. Add definitions, examples, evaluation questions, key points ONLY if they add value. "
-                    . "Use Nigeria-centric examples. Return ONLY valid JSON: "
+                    . "Use clear, globally relatable examples. Return ONLY valid JSON: "
                     . '{"topic":"...","introduction":"...","content":"FULL HTML — <h3>/<h4> headings chosen for this topic (2-3 pages)","sections":[{"heading":"...","content":"..."}],"evaluationQuestions":["..."],"keyPoints":["..."]}';
                 $fallbackResponse = $this->ai->generate($simplePrompt, false, 8192, 0.7);
                 if (!empty(trim($fallbackResponse))) {
@@ -758,7 +758,7 @@ class AIController extends Controller
         }
 
         return <<<PROMPT
-You are a Nigerian curriculum expert and professional lesson plan writer for the Nigerian (NERDC/UBEC) curriculum.
+You are a curriculum expert and professional lesson plan writer.
 
 CRITICAL — You MUST write ONLY about the EXACT topic specified below. Do NOT change the topic or write about anything else.
 
@@ -811,10 +811,10 @@ RULES:
 - Each objective, its corresponding step, and its evaluation question must cover the SAME sub-topic.
 - Teacher and learner activities must be practical, detailed, and curriculum-based.
 - ALL content must be about "{$topic}" specifically for {$class} level ({$ageRange}).
-- Use Nigerian examples (₦aira, Nigerian locations, cultural contexts).
+- Use globally relatable, real-world examples without referencing any specific country or city.
 - Every field must contain substantial content — no empty or one-line entries.
 - If the topic is "{$topic}", do NOT write about anything else.
-- Use Nigeria-centric examples and contexts throughout.
+- Use globally relatable examples and contexts throughout — do not mention Nigeria or specific cities like Lagos or Kano.
 {$stemFormatting}
 PROMPT;
     }
@@ -822,7 +822,7 @@ PROMPT;
     private function buildMathLessonPlanPrompt($subject, $class, $term, $week, $topic, $schoolName, $teacherName, $duration, $ageRange, $weekScheme, $subtopicsInstruction, $stepCountInstruction, $minSteps, $maxSteps): string
     {
         return <<<PROMPT
-You are an experienced Nigerian Mathematics teacher and curriculum expert. Design a DETAILED MATHEMATICS LESSON PLAN for "{$topic}" in {$subject} ({$class}, {$term}, Week {$week}).
+You are an experienced Mathematics teacher and curriculum expert. Design a DETAILED MATHEMATICS LESSON PLAN for "{$topic}" in {$subject} ({$class}, {$term}, Week {$week}).
 
 CRITICAL — MATHEMATICS IS LEARNED THROUGH DOING. Structure every part of this lesson plan around SOLVING MATHEMATICAL PROBLEMS.
 
@@ -902,7 +902,7 @@ RULES:
 - Every step MUST involve solving mathematical problems — minimize lecturing
 - Examples must progress from simple to difficult
 - Each worked example must show EVERY step — no skipping
-- Include Nigerian contexts (₦aira, market prices, local measurements) in word problems
+- Include globally relatable real-world contexts (market prices, local measurements) in word problems — use neutral currency like $ or generic units, not $aira
 - Allocate at least 60% of class time to students solving problems (guided + independent)
 - Evaluation questions must test calculation ability, not theory recall
 - Assignment must be substantial problem-solving practice
@@ -978,19 +978,19 @@ FORMATTING REQUIREMENTS FOR EQUATIONS AND FORMULAE:
 - Every bracket must be correctly paired and clearly visible
 - For Physics: display equations exactly as in standard textbooks, show derivations step by step
 - For Chemistry: balance all chemical equations, format ionic equations with proper charges",
-            'humanities' => "This is a HUMANITIES/SOCIAL SCIENCE subject. Focus on: clear explanations of concepts, definitions, classifications, historical developments, causes and effects, significance, key figures, quotations (where relevant), and connections to Nigerian society and contemporary issues. Use real-life Nigerian examples and case studies.",
-            'commercial' => "This is a COMMERCIAL/BUSINESS subject. Include: key terms with definitions, principles and concepts, calculations where relevant (e.g., ratios, interest, profit margins), practical business examples using Nigerian contexts (₦aira, Nigerian businesses), formats and templates (e.g., ledger accounts, invoices, receipts), and real-world applications in the Nigerian economy.",
-            'tech_voc' => "This is a TECHNOLOGY/VOCATIONAL subject. Include: step-by-step processes, safety precautions (where relevant), tools and materials needed, practical applications, labelled [DIAGRAM: description] placeholders for equipment/processes, maintenance procedures, and Nigerian vocational contexts.",
+            'humanities' => "This is a HUMANITIES/SOCIAL SCIENCE subject. Focus on: clear explanations of concepts, definitions, classifications, historical developments, causes and effects, significance, key figures, quotations (where relevant), and connections to society and contemporary issues. Use globally relatable real-life examples and case studies without favoring any country.",
+            'commercial' => "This is a COMMERCIAL/BUSINESS subject. Include: key terms with definitions, principles and concepts, calculations where relevant (e.g., ratios, interest, profit margins), practical business examples using globally relatable contexts, formats and templates (e.g., ledger accounts, invoices, receipts), and real-world business applications without country-specific references.",
+            'tech_voc' => "This is a TECHNOLOGY/VOCATIONAL subject. Include: step-by-step processes, safety precautions (where relevant), tools and materials needed, practical applications, labelled [DIAGRAM: description] placeholders for equipment/processes, maintenance procedures, and globally relatable vocational contexts.",
             default => "Organize content based on the natural structure of the topic. Let the topic determine what headings and sections are appropriate."
         };
 
         return <<<PROMPT
-You are a Nigerian curriculum expert and experienced classroom teacher. Write a DETAILED LESSON NOTE about "{$topic}" for {$subject} ({$class}, {$term}, Week {$week}). Difficulty: {$difficulty}.
+You are a curriculum expert and experienced classroom teacher. Write a DETAILED LESSON NOTE about "{$topic}" for {$subject} ({$class}, {$term}, Week {$week}). Difficulty: {$difficulty}.
 
 BEFORE YOU WRITE, ANALYZE THE TOPIC:
 1. What is the nature of "{$topic}"? (concept, process, classification, theory, formula-based, historical event, practical skill, literary analysis, etc.)
 2. What class level is this? ({$class} — {$ageRange}) — match vocabulary and complexity precisely.
-3. What headings would an experienced Nigerian teacher naturally use when teaching THIS topic to THIS class?
+3. What headings would an experienced teacher naturally use when teaching THIS topic to THIS class?
 4. What supporting elements (definitions, examples, diagrams, formulae, calculations, exercises, activities) will help students understand THIS topic?
 5. What sections would NOT be relevant and should be OMITTED?
 
@@ -1018,8 +1018,8 @@ Now write the lesson note. Return ONLY valid JSON. ALL fields below are OPTIONAL
   "topic": "{$topic}",
   "subtopics": ["Relevant subtopics — only if the topic naturally breaks into subtopics"],
   "learningObjectives": ["Learners define ...", "Learners explain ..." — start each with 'Learners' + action verb; NEVER 'students should be able to' — only if objectives add value],
-  "introduction": "3-5 sentence engaging introduction connecting to prior knowledge with Nigeria context",
-  "content": "FULL HTML — MAIN BODY of the lesson (~2-3 A4 pages). Choose <h3> for main section headings and <h4> for subsections that are APPROPRIATE for this topic. Possible headings (use only what fits): Definitions, Types/Kinds, Classification, Properties, Characteristics, Structure, Functions, Causes, Effects, Symptoms, Prevention, Control, Processes, Steps, Principles, Laws, Formulae, Worked Examples, Solved Problems, Experiments, Observations, Uses, Importance, Benefits, Drawbacks, Diagrams, Tables. Use <p>, <ul>, <ol>, <table>, <pre> as needed. For diagrams: include [DIAGRAM: clear description]. For calculations: show step-by-step solutions. Use Nigeria-centric examples throughout.",
+  "introduction": "3-5 sentence engaging introduction connecting to prior knowledge with globally relatable context",
+  "content": "FULL HTML — MAIN BODY of the lesson (~2-3 A4 pages). Choose <h3> for main section headings and <h4> for subsections that are APPROPRIATE for this topic. Possible headings (use only what fits): Definitions, Types/Kinds, Classification, Properties, Characteristics, Structure, Functions, Causes, Effects, Symptoms, Prevention, Control, Processes, Steps, Principles, Laws, Formulae, Worked Examples, Solved Problems, Experiments, Observations, Uses, Importance, Benefits, Drawbacks, Diagrams, Tables. Use <p>, <ul>, <ol>, <table>, <pre> as needed. For diagrams: include [DIAGRAM: clear description]. For calculations: show step-by-step solutions. Use globally relatable examples throughout without mentioning any specific country.",
   "sections": [
     {
       "heading": "Section heading (only if this section needs distinct visual treatment)",
@@ -1039,8 +1039,8 @@ ABSOLUTELY FORBIDDEN:
 
 IMPORTANT RULES:
 - Every sentence MUST be about "{$topic}"
-- Follow NERDC/UBEC Nigerian curriculum standards
-- Use Nigeria-centric examples (₦aira, Nigerian cities, local culture, contexts)
+- Follow standard curriculum standards for the specified class level
+- Use globally relatable examples without mentioning Nigeria or specific cities like Lagos or Kano
 - Match vocabulary complexity to {$class} level ({$ageRange})
 - Difficulty "{$difficulty}": Simple=foundational, Standard=curriculum depth, Deep=advanced (including WAEC/NECO/JAMB-level content)
 - If a diagram would improve understanding, include [DIAGRAM: clear description of what to draw] in the content
@@ -1064,7 +1064,7 @@ PROMPT;
         }
 
         return <<<PROMPT
-You are an experienced Nigerian Mathematics teacher and curriculum expert. Write a DETAILED MATHEMATICS LESSON NOTE about "{$topic}" for {$subject} ({$class}, {$term}, Week {$week}). Difficulty: {$difficulty}.
+You are an experienced Mathematics teacher and curriculum expert. Write a DETAILED MATHEMATICS LESSON NOTE about "{$topic}" for {$subject} ({$class}, {$term}, Week {$week}). Difficulty: {$difficulty}.
 
 CRITICAL — MATHEMATICS IS A PRACTICAL SUBJECT. This lesson note must focus on SOLVING PROBLEMS, not writing long explanations. Follow these rules strictly:
 
@@ -1076,7 +1076,7 @@ CONTENT BALANCE (MANDATORY):
 MINIMUM 5 FULLY SOLVED WORKED EXAMPLES — YOU MUST INCLUDE AT LEAST 5:
 - Example 1: Simple/basic — direct application of the formula or method
 - Example 2: Moderate — requires slightly more steps or careful substitution
-- Example 3: Moderate-Hard — word problem or application in Nigerian context
+- Example 3: Moderate-Hard — word problem or application in a globally relatable real-world context
 - Example 4: Hard — multi-step problem requiring combined techniques
 - Example 5: Examination standard — WAEC/NECO/JAMB style question
 - (Include more examples if the topic merits it, up to 8)
@@ -1150,7 +1150,7 @@ Return ONLY valid JSON:
 
 RULES:
 - Every example must be FULLY SOLVED with all steps shown — never skip steps
-- Use Nigerian contexts for word problems (₦aira, Nigerian markets, local measurements)
+- Use globally relatable contexts for word problems (markets, local measurements) with neutral currency
 - Match difficulty to {$class} level ({$ageRange})
 - Difficulty "{$difficulty}": Simple=basic numeracy, Standard=curriculum level, Deep=WAEC/NECO/JAMB exam standard
 - Include at least 5-8 fully worked examples for standard topics, more for complex topics
@@ -1358,14 +1358,14 @@ CHEMISTRY;
         }
 
         return <<<PROMPT
-You are a Nigerian examination expert. Generate {$askCount} objective (multiple-choice) questions{$theoryPart} about "{$topic}" in {$subject} for {$class} level ({$term}).{$difficultyLine}
+You are an examination expert. Generate {$askCount} objective (multiple-choice) questions{$theoryPart} about "{$topic}" in {$subject} for {$class} level ({$term}).{$difficultyLine}
 {$subtopicLine}
 {$physicsInstructions}
 {$chemistryInstructions}
 
 SUBJECT: {$subject} — Every question MUST be about {$subject} content.
 TOPIC: {$topic} — Every question MUST test knowledge specifically about "{$topic}" within {$subject}.
-CLASS: {$class} — Match difficulty to {$class} per the Nigerian curriculum (NERDC/UBEC/WASSCE/NECO/JAMB).
+CLASS: {$class} — Match difficulty to {$class} per standard curriculum for that class level.
 
 CRITICAL RULE — EVERY question stem MUST contain the word "{$topic}" or a direct reference to a specific subtopic within {$topic}. If the stem doesn't mention {$topic}, the question is OFF-TOPIC and will be rejected.
 
@@ -1401,7 +1401,7 @@ PROMPT;
         $subtopicLine = $subTopic ? "\nSUB-TOPIC: \"{$subTopic}\". Focus questions on this sub-topic within \"{$topic}\"." : '';
 
         return <<<PROMPT
-You are a Nigerian Mathematics examination expert. Generate a MATHEMATICS QUESTION POOL about "{$topic}" in {$subject} for {$class} level ({$term}). Difficulty: {$difficulty}.
+You are a Mathematics examination expert. Generate a MATHEMATICS QUESTION POOL about "{$topic}" in {$subject} for {$class} level ({$term}). Difficulty: {$difficulty}.
 
 CRITICAL — NEARLY 100% OF MATHEMATICS QUESTIONS MUST BE CALCULATION-BASED. Do NOT include definition, list, state, or theory recall questions. Every question must require mathematical working.
 
@@ -1411,7 +1411,7 @@ Generate {$count} objective (multiple-choice) questions{$theoryPart}. Distribute
 
 QUESTION DISTRIBUTION:
 - 50% Direct computational (solve, calculate, evaluate, simplify, find the value of)
-- 25% Word problems (real-life scenarios using Nigerian contexts — ₦aira, market, farm measurements, business)
+- 25% Word problems (real-life scenarios using globally relatable contexts — markets, farm measurements, business — with neutral currency)
 - 15% Application questions (apply formula to given data, interpret results)
 - 10% Multi-step problem-solving (combine 2+ techniques to find answer)
 
@@ -1520,7 +1520,7 @@ PROMPT;
         ]);
 
         return <<<PROMPT
-You are a Nigerian examination expert. Your task is to generate {$askCount} objective (multiple-choice) questions based STRICTLY on the lesson note provided below for {$subject} ({$class}, {$term}, Week {$week}).
+You are an examination expert. Your task is to generate {$askCount} objective (multiple-choice) questions based STRICTLY on the lesson note provided below for {$subject} ({$class}, {$term}, Week {$week}).
 
 SUBJECT: {$subject}
 TOPIC: {$topic}
@@ -1609,11 +1609,11 @@ PROMPT;
         }
 
         return <<<PROMPT
-You are a Nigerian Mathematics examination expert. Generate {$count} MATHEMATICS QUESTIONS based STRICTLY on the lesson note below for {$subject} ({$class}, {$term}, Week {$week}).
+You are a Mathematics examination expert. Generate {$count} MATHEMATICS QUESTIONS based STRICTLY on the lesson note below for {$subject} ({$class}, {$term}, Week {$week}).
 
 CRITICAL — These are MATHEMATICS questions. Nearly 100% must test CALCULATION, not theory. Focus on:
 - Computational problems (solve, calculate, simplify, evaluate, find)
-- Word problems using Nigerian contexts (₦aira, local measurements, markets)
+- Word problems using globally relatable contexts (local measurements, markets) with neutral currency
 - Application of formulae and methods shown in the lesson note
 - Problems requiring logical reasoning and step-by-step working
 - Multi-step problems that combine techniques
@@ -2026,7 +2026,7 @@ PROMPT;
 
             $subtopic = $data['subTopic'] ?? '';
             $subtopicLine = $subtopic ? " Sub-topic: \"{$subtopic}\"." : '';
-            $simplePrompt = "You are a Nigerian exam expert for {$subject} ({$class} level). "
+            $simplePrompt = "You are an exam expert for {$subject} ({$class} level). "
                 . "CRITICAL: Generate {$count} multiple-choice questions that DIRECTLY TEST \"{$topic}\" in {$subject} for {$class} level.{$subtopicLine}\n\n"
                 . "SUBJECT: {$subject}. TOPIC: \"{$topic}\". CLASS: {$class}.\n"
                 . "EVERY question stem MUST contain the exact word \"{$topic}\" or a direct subtopic reference. Questions without {$topic} in the stem are OFF-TOPIC.\n\n"
@@ -2584,13 +2584,13 @@ PROMPT;
     protected function buildStrictRetryPrompt(string $originalPrompt, string $subject, string $topic, string $class, string $type = 'questions', int $count = 20): string
     {
         if ($type === 'lesson_note') {
-            return "You are a Nigerian curriculum expert. Your ONLY task: Write a DETAILED LESSON NOTE about \"{$topic}\" in {$subject} for {$class}.\n\n"
+            return "You are a curriculum expert. Your ONLY task: Write a DETAILED LESSON NOTE about \"{$topic}\" in {$subject} for {$class}.\n\n"
                  . "PREVIOUS ATTEMPT REJECTED — REASON: The lesson note did not focus on the requested topic.\n\n"
                  . "CRITICAL INSTRUCTIONS:\n"
                  . "- The topic is \"{$topic}\". Write ONLY about \"{$topic}\".\n"
                  . "- Analyze the topic and choose headings that are naturally relevant. Do NOT force any section.\n"
                  . "- Every sentence must be about \"{$topic}\".\n"
-                 . "- Use Nigeria-centric examples (₦aira, Nigerian cities, local culture).\n"
+                 . "- Use globally relatable examples without mentioning Nigeria or specific cities like Lagos or Kano.\n"
                  . "- For Mathematics/Physics/Chemistry: INCLUDE AT LEAST 5 FULLY SOLVED WORKED EXAMPLES with every step shown.\n"
                  . "- Use proper mathematical notation: × (not x), ÷ (not /), <sup> for powers, <sub> for indices/chemical formulae\n"
                  . "- Format fractions with CSS inline-block — NEVER slanted slashes\n"
@@ -2602,18 +2602,19 @@ PROMPT;
                  . '  {"topic":"...","introduction":"...","content":"FULL HTML with <h3>/<h4> headings, minimum 5 worked examples","sections":[{"heading":"...","content":"..."}],"evaluationQuestions":["..."],"keyPoints":["..."]}' . "\n";
         }
 
-        return "You are a Nigerian examination expert for {$subject} ({$class}).\n\n"
-             . "CRITICAL: Generate {$count} objective questions about \"{$topic}\".\n\n"
+        return "You are an examination expert for {$subject} ({$class}).\n\n"
+             . "CRITICAL: Generate {$count} objective questions about \"{$topic}\". Do not mention any specific country or cities like Lagos or Kano.\n\n"
              . "PREVIOUS ATTEMPT REJECTED — QUESTIONS WERE OFF-TOPIC OR TOO SIMPLE.\n\n"
              . "STRICT RULES — FOLLOW EVERY ONE:\n"
              . "- SUBJECT: {$subject}. TOPIC: \"{$topic}\". CLASS: {$class}.\n"
              . "- EVERY question stem MUST contain the exact word \"{$topic}\" or one of its key subtopics.\n"
              . "- Every question must test knowledge specifically about {$topic} in {$subject}.\n"
              . "- If the stem doesn't mention {$topic}, the question is REJECTED.\n"
+             . "- Do not add phrases like \"in the Nigerian context\" or city names.\n"
              . "- Vary styles: directives (State/Define/List), fill-the-blank (___), scenarios, classifications, compare/contrast, cause-effect, All-EXCEPT, calculations, true/false.\n"
              . "- At most 2 WH-word starters per 10 questions.\n"
              . "- 4 UNIQUE options (A/B/C/D), exactly ONE correct answer.\n"
-             . "- Write questions appropriate for a {$class} student in the Nigerian curriculum.\n"
+             . "- Write questions appropriate for a {$class} student per standard curriculum for that level.\n"
              . "- For Mathematics questions: nearly 100% must be CALCULATION-BASED. No definition/list/state questions.\n"
              . "- For Physics questions: 80% calculation, 20% theory. Use proper units and scientific notation.\n"
              . "- Use proper notation: × (not x), ÷ (not /), <sup> for powers, √ for square roots, π for pi\n"

@@ -140,7 +140,7 @@
                 <div class="p-8 sm:p-12 bg-white flex flex-col md:flex-row gap-8 items-center justify-between text-left">
                     <div class="space-y-4 max-w-md">
                         <span class="text-xs font-bold text-red-600 uppercase tracking-wider block">Interactive Suite</span>
-                        <h3 class="text-2xl font-extrabold text-blue-950 leading-tight">Nigeria's No. 1 Educator Portal for Primary & High Schools</h3>
+                        <h3 class="text-2xl font-extrabold text-blue-950 leading-tight">Global Educator Portal for Primary & High Schools</h3>
                         <p class="text-sm text-slate-600">
                             Fully operational dashboards configured with assessment engines, performance index lines, student scorecard tracking, and downloadable grade reports.
                         </p>
@@ -198,7 +198,7 @@
                 <div class="p-6 bg-white hover:bg-slate-50 rounded-2xl border border-slate-200 hover:border-blue-900 transition duration-300 flex flex-col space-y-4">
                     <span class="w-10 h-10 rounded-xl bg-slate-50 shadow-xs border border-slate-100 flex items-center justify-center text-violet-600">🧠</span>
                     <h3 class="text-base font-extrabold text-blue-950">Exam Question Generator</h3>
-                    <p class="text-xs text-slate-600 leading-relaxed flex-grow">Generate comprehensive multiple-choice questions matching Nigeria and WAEC/NECO syllabus in seconds.</p>
+                    <p class="text-xs text-slate-600 leading-relaxed flex-grow">Generate comprehensive multiple-choice questions matching international curriculum standards in seconds.</p>
                 </div>
                 <div class="p-6 bg-white hover:bg-slate-50 rounded-2xl border border-slate-200 hover:border-blue-900 transition duration-300 flex flex-col space-y-4">
                     <span class="w-10 h-10 rounded-xl bg-slate-50 shadow-xs border border-slate-100 flex items-center justify-center text-emerald-600">📖</span>
@@ -261,7 +261,7 @@
     <section class="py-20 bg-white border-t border-slate-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
             <div class="text-center space-y-3">
-                <h2 class="text-3xl font-black text-blue-950 tracking-tight">Loved by Nigerian Educators</h2>
+                <h2 class="text-3xl font-black text-blue-950 tracking-tight">Loved by Educators Worldwide</h2>
                 <p class="text-slate-600 max-w-xl mx-auto text-sm">
                     Read how schools are elevating digital assessment pipelines.
                 </p>
@@ -277,7 +277,7 @@
                         <span class="w-4 h-4 text-amber-400 fill-amber-400">⭐</span>
                     </div>
                     <p class="text-xs text-slate-700 italic leading-relaxed">
-                        "Generating lesson notes used to take hours of manual copy pasting. With ClassPortal, I generated a 3-week lesson note and evaluation questions in 2 minutes. The Nigerian syllabus alignment is spot-on!"
+                        "Generating lesson notes used to take hours of manual copy pasting. With ClassPortal, I generated a 3-week lesson note and evaluation questions in 2 minutes. The syllabus alignment is spot-on!"
                     </p>
                     <div>
                         <p class="text-xs font-bold text-slate-900">Mrs. Abigail Johnson</p>
@@ -484,7 +484,7 @@
                     <span class="text-lg font-black tracking-tight">ClassPortal</span>
                 </div>
                 <p class="text-xs text-slate-400 max-w-sm leading-relaxed">
-                    Nigeria's state-of-the-art educational interface transforming CBT examiners, bulk lesson planners, and student grading profiles.
+                    Global state-of-the-art educational interface transforming CBT examiners, bulk lesson planners, and student grading profiles.
                 </p>
             </div>
             <div class="space-y-3">
@@ -807,7 +807,7 @@
             tabSignup.className = 'flex-1 py-1.5 rounded-xl transition cursor-pointer border-none bg-transparent text-slate-700 hover:text-slate-900';
         } else         if (mode === 'signup') {
             modalHeading.textContent = 'Create Educator or Student Account';
-            modalSubheading.textContent = 'Get your customized Nigeria and WAEC/NECO educational dashboard.';
+            modalSubheading.textContent = 'Get your customized educational dashboard.';
             authSubmit.textContent = 'Create Academic Profile';
             fieldName.classList.remove('hidden');
             document.getElementById('field-username').classList.remove('hidden');

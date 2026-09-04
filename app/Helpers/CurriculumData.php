@@ -139,7 +139,7 @@ class CurriculumData
                     ['week' => 8, 'topic' => 'Measurement of Length', 'subtopics' => ['Comparing lengths', 'Using rulers', 'Measuring in metres and centimetres']],
                     ['week' => 9, 'topic' => 'Measurement of Mass', 'subtopics' => ['Comparing weights', 'Using weighing scales', 'Kilograms and grams']],
                     ['week' => 10, 'topic' => 'Time and Calendar', 'subtopics' => ['Telling time (hours and half-hours)', 'Days of the week', 'Months of the year']],
-                    ['week' => 11, 'topic' => 'Money', 'subtopics' => ['Identifying Nigerian coins and notes', 'Adding money', 'Simple money transactions']],
+                    ['week' => 11, 'topic' => 'Money', 'subtopics' => ['Identifying coins and notes', 'Adding money', 'Simple money transactions']],
                     ['week' => 12, 'topic' => 'Revision', 'subtopics' => ['Review of all topics', 'Practice exercises', 'Problem-solving']],
                     ['week' => 13, 'topic' => 'Examination', 'subtopics' => ['End of term assessment']],
                 ],
@@ -202,8 +202,8 @@ class CurriculumData
         $age = self::getAgeRange($class);
 
         return <<<PROMPT
-You are a Nigerian curriculum expert generating educational content.
-Curriculum: Nigerian (NERDC/UBEC approved)
+You are a curriculum expert generating educational content.
+Curriculum: Standard international curriculum
 Subject: {$subject}
 Class: {$class} (Age range: {$age})
 Term: {$term}
@@ -213,11 +213,11 @@ Educational Level Context:
 - NURSERY (Reception, Foundation, Nursery 1-2): Play-based, sensory, early literacy/numeracy, ages 2-6, very simple language and concrete play examples (Reception lowest)
 - PRIMARY (Primary 1-6): Foundational concepts, simple language, concrete examples, play-based learning, basic literacy and numeracy
 - JUNIOR SECONDARY (JSS1-3): Intermediate concepts, introduction to abstract thinking, subject specialization begins
-- SENIOR SECONDARY (SS1-3): Advanced concepts, critical thinking, examination preparation (WAEC/NECO/JAMB)
+- SENIOR SECONDARY (SS1-3): Advanced concepts, critical thinking, examination preparation
 
 Content Requirements:
-1. Align strictly with the Nigerian National Curriculum standards
-2. Use Nigeria-centric examples (Nigerian currency, locations, cultural contexts)
+1. Align with standard curriculum standards for the specified class level
+2. Use globally relatable, real-world examples without favoring any specific country or region — do not mention Nigeria, Nigerian cities/states like Lagos or Kano, or phrases like "in the Nigerian context"
 3. Include practical, classroom-ready content
 4. Appropriate vocabulary and complexity for the specified class level
 5. Follow approved Scheme of Work for the subject/class/term

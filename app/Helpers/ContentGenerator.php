@@ -146,7 +146,7 @@ class ContentGenerator
                 ['question' => 'The perimeter of a square with side 8 cm is:', 'A' => '16 cm', 'B' => '24 cm', 'C' => '32 cm', 'D' => '64 cm', 'answer' => 'C', 'topic' => 'perimeter'],
                 ['question' => 'Solve for x: 2x + 5 = 15', 'A' => '2', 'B' => '5', 'C' => '10', 'D' => '3', 'answer' => 'B', 'topic' => 'algebra'],
                 ['question' => 'What is the product of 15 and 8?', 'A' => '105', 'B' => '120', 'C' => '115', 'D' => '125', 'answer' => 'B', 'topic' => 'multiplication'],
-                ['question' => 'If a shirt costs ₦3,500 and there is a 10% discount, what is the discount amount?', 'A' => '₦250', 'B' => '₦300', 'C' => '₦350', 'D' => '₦400', 'answer' => 'C', 'topic' => 'discount'],
+                ['question' => 'If a shirt costs $35 and there is a 10% discount, what is the discount amount?', 'A' => '$2.50', 'B' => '$3.00', 'C' => '$3.50', 'D' => '$4.00', 'answer' => 'C', 'topic' => 'discount'],
                 ['question' => 'What is the next number in the sequence: 2, 4, 6, 8, ?', 'A' => '9', 'B' => '10', 'C' => '11', 'D' => '12', 'answer' => 'B', 'topic' => 'sequences'],
                 ['question' => 'How many degrees are in a right angle?', 'A' => '45°', 'B' => '60°', 'C' => '90°', 'D' => '180°', 'answer' => 'C', 'topic' => 'angles'],
                 ['question' => 'Calculate the area of a rectangle with length 5 cm and width 3 cm:', 'A' => '8 cm²', 'B' => '15 cm²', 'C' => '16 cm²', 'D' => '10 cm²', 'answer' => 'B', 'topic' => 'area'],
@@ -164,7 +164,7 @@ class ContentGenerator
                 ['question' => 'Simplify: 2x + 3x - x', 'A' => '3x', 'B' => '4x', 'C' => '5x', 'D' => '6x', 'answer' => 'B', 'topic' => 'algebra'],
                 ['question' => 'Evaluate: √(49 + 32)', 'A' => '7', 'B' => '8', 'C' => '9', 'D' => '10', 'answer' => 'C', 'topic' => 'square roots'],
                 ['question' => 'A rectangular field measures 25 m by 12 m. Find its area in m<sup>2</sup>.', 'A' => '200 m²', 'B' => '250 m²', 'C' => '300 m²', 'D' => '325 m²', 'answer' => 'C', 'topic' => 'mensuration'],
-                ['question' => 'Calculate the simple interest on ₦5,000 at 10% per annum for 2 years.', 'A' => '₦500', 'B' => '₦1,000', 'C' => '₦1,500', 'D' => '₦2,000', 'answer' => 'B', 'topic' => 'simple interest'],
+                ['question' => 'Calculate the simple interest on $5,000 at 10% per annum for 2 years.', 'A' => '$500', 'B' => '$1,000', 'C' => '$1,500', 'D' => '$2,000', 'answer' => 'B', 'topic' => 'simple interest'],
                 ['question' => 'If 3x + 2y = 12 and x = 2, find y.', 'A' => '2', 'B' => '3', 'C' => '4', 'D' => '5', 'answer' => 'B', 'topic' => 'algebra'],
                 ['question' => 'Find the median of the numbers: 5, 8, 3, 9, 6', 'A' => '3', 'B' => '5', 'C' => '6', 'D' => '8', 'answer' => 'C', 'topic' => 'statistics'],
             ],
@@ -289,7 +289,7 @@ class ContentGenerator
                 ['question' => 'When demand exceeds supply, the price tends to:', 'A' => 'Fall', 'B' => 'Rise', 'C' => 'Stay the same', 'D' => 'Become zero', 'answer' => 'B', 'topic' => 'demand and supply'],
                 ['question' => 'Which of these is a direct tax?', 'A' => 'VAT', 'B' => 'Excise duty', 'C' => 'Income tax', 'D' => 'Import duty', 'answer' => 'C', 'topic' => 'taxation'],
                 ['question' => 'Land as a factor of production includes:', 'A' => 'Only soil', 'B' => 'All natural resources', 'C' => 'Buildings only', 'D' => 'Money', 'answer' => 'B', 'topic' => 'factors of production'],
-                ['question' => 'The Central Bank of Nigeria is responsible for:', 'A' => 'Printing money', 'B' => 'Accepting deposits', 'C' => 'Granting loans to individuals', 'D' => 'Issuing currency', 'answer' => 'D', 'topic' => 'money and banking'],
+                ['question' => 'The Central Bank is responsible for:', 'A' => 'Printing money', 'B' => 'Accepting deposits', 'C' => 'Granting loans to individuals', 'D' => 'Issuing currency', 'answer' => 'D', 'topic' => 'money and banking'],
                 ['question' => 'Which of the following is a free good?', 'A' => 'Bread', 'B' => 'Sunlight', 'C' => 'Car', 'D' => 'Clothes', 'answer' => 'B', 'topic' => 'basic concepts'],
                 ['question' => 'The reward for capital as a factor of production is:', 'A' => 'Wages', 'B' => 'Rent', 'C' => 'Interest', 'D' => 'Profit', 'answer' => 'C', 'topic' => 'factors of production'],
                 ['question' => 'Which of these is an indirect tax?', 'A' => 'Personal income tax', 'B' => 'Company income tax', 'C' => 'Value Added Tax (VAT)', 'D' => 'Capital gains tax', 'answer' => 'C', 'topic' => 'taxation'],
@@ -301,21 +301,21 @@ class ContentGenerator
             ],
 
             'government' => [
-                ['question' => 'Nigeria became a republic in the year:', 'A' => '1960', 'B' => '1963', 'C' => '1966', 'D' => '1979', 'answer' => 'B', 'topic' => 'constitution'],
-                ['question' => 'The head of the executive arm of government in Nigeria is the:', 'A' => 'Chief Justice', 'B' => 'Senate President', 'C' => 'Speaker', 'D' => 'President', 'answer' => 'D', 'topic' => 'executive'],
+                ['question' => 'A country became a republic in the year:', 'A' => '1960', 'B' => '1963', 'C' => '1966', 'D' => '1979', 'answer' => 'B', 'topic' => 'constitution'],
+                ['question' => 'The head of the executive arm of government  is the:', 'A' => 'Chief Justice', 'B' => 'Senate President', 'C' => 'Speaker', 'D' => 'President', 'answer' => 'D', 'topic' => 'executive'],
                 ['question' => 'Which of the following is a function of the legislature?', 'A' => 'Interpreting laws', 'B' => 'Making laws', 'C' => 'Executing laws', 'D' => 'Enforcing laws', 'answer' => 'B', 'topic' => 'legislature'],
-                ['question' => 'The highest court in Nigeria is the:', 'A' => 'High Court', 'B' => 'Appeal Court', 'C' => 'Supreme Court', 'D' => 'Magistrate Court', 'answer' => 'C', 'topic' => 'judiciary'],
+                ['question' => 'The highest court  is the:', 'A' => 'High Court', 'B' => 'Appeal Court', 'C' => 'Supreme Court', 'D' => 'Magistrate Court', 'answer' => 'C', 'topic' => 'judiciary'],
                 ['question' => 'A constitution that is difficult to amend is said to be:', 'A' => 'Flexible', 'B' => 'Written', 'C' => 'Rigid', 'D' => 'Unwritten', 'answer' => 'C', 'topic' => 'constitution'],
-                ['question' => 'Nigeria gained independence from Britain in:', 'A' => '1957', 'B' => '1960', 'C' => '1963', 'D' => '1966', 'answer' => 'B', 'topic' => 'constitution'],
+                ['question' => 'A country gained independence in:', 'A' => '1957', 'B' => '1960', 'C' => '1963', 'D' => '1966', 'answer' => 'B', 'topic' => 'constitution'],
                 ['question' => 'The three arms of government are the executive, legislature and:', 'A' => 'Police', 'B' => 'Judiciary', 'C' => 'Military', 'D' => 'Civil service', 'answer' => 'B', 'topic' => 'separation of powers'],
                 ['question' => 'Which of the following is a function of the executive?', 'A' => 'Making laws', 'B' => 'Interpreting laws', 'C' => 'Implementing laws', 'D' => 'Amending laws', 'answer' => 'C', 'topic' => 'executive'],
                 ['question' => 'The principle of separation of powers was propounded by:', 'A' => 'John Locke', 'B' => 'Montesquieu', 'C' => 'Rousseau', 'D' => 'Thomas Hobbes', 'answer' => 'B', 'topic' => 'separation of powers'],
                 ['question' => 'A political system where power is shared between central and regional governments is called:', 'A' => 'Unitary', 'B' => 'Federal', 'C' => 'Confederal', 'D' => 'Parliamentary', 'answer' => 'B', 'topic' => 'federalism'],
-                ['question' => 'The head of the Nigerian Senate is called the:', 'A' => 'Speaker', 'B' => 'Chief Justice', 'C' => 'Senate President', 'D' => 'Prime Minister', 'answer' => 'C', 'topic' => 'legislature'],
-                ['question' => 'Which of the following countries operates a unicameral legislature?', 'A' => 'Nigeria', 'B' => 'USA', 'C' => 'Ghana', 'D' => 'UK', 'answer' => 'C', 'topic' => 'legislature'],
+                ['question' => 'The head of the Senate is called the:', 'A' => 'Speaker', 'B' => 'Chief Justice', 'C' => 'Senate President', 'D' => 'Prime Minister', 'answer' => 'C', 'topic' => 'legislature'],
+                ['question' => 'Which of the following countries operates a unicameral legislature?', 'A' => 'Australia', 'B' => 'USA', 'C' => 'Ghana', 'D' => 'UK', 'answer' => 'C', 'topic' => 'legislature'],
                 ['question' => 'The process of voting for political representatives is called:', 'A' => 'Nomination', 'B' => 'Election', 'C' => 'Appointment', 'D' => 'Selection', 'answer' => 'B', 'topic' => 'elections'],
-                ['question' => 'Nigeria\'s current constitution was enacted in:', 'A' => '1979', 'B' => '1989', 'C' => '1999', 'D' => '2005', 'answer' => 'C', 'topic' => 'constitution'],
-                ['question' => 'Which of the following is a fundamental human right in Nigeria?', 'A' => 'Right to drive', 'B' => 'Right to education', 'C' => 'Right to own a gun', 'D' => 'Right to travel abroad free', 'answer' => 'B', 'topic' => 'human rights'],
+                ['question' => 'A country\'s current constitution was enacted in:', 'A' => '1979', 'B' => '1989', 'C' => '1999', 'D' => '2005', 'answer' => 'C', 'topic' => 'constitution'],
+                ['question' => 'Which of the following is a fundamental human right ?', 'A' => 'Right to drive', 'B' => 'Right to education', 'C' => 'Right to own a gun', 'D' => 'Right to travel abroad free', 'answer' => 'B', 'topic' => 'human rights'],
             ],
         ];
 
@@ -592,9 +592,9 @@ class ContentGenerator
             return "The teacher begins the lesson by asking students to mention what they already know about {$topic}. A fun story, song, or real-life example related to {$topic} is shared to capture the learners' attention. The teacher then announces: 'Today, we are going to learn about {$topic}.' The learning objectives are written on the board in simple, child-friendly language.";
         }
         if ($level === 'junior') {
-            return "The teacher reviews the previous lesson and asks questions to assess students' prior knowledge of {$subject}. A thought-provoking question related to {$topic} is posed to stimulate curiosity and engage critical thinking. The teacher then introduces the new topic '{$topic}' and explains the learning objectives for the lesson, relating the topic to real-life situations in Nigeria.";
+            return "The teacher reviews the previous lesson and asks questions to assess students' prior knowledge of {$subject}. A thought-provoking question related to {$topic} is posed to stimulate curiosity and engage critical thinking. The teacher then introduces the new topic '{$topic}' and explains the learning objectives for the lesson, relating the topic to real-life situations .";
         }
-        return "The teacher begins by connecting the lesson to students' existing knowledge of {$subject}. A brief discussion on the relevance of {$topic} in the Nigerian context and in the broader field of {$subject} is facilitated. Students are informed of what they will achieve by the end of the lesson, and the teacher sets clear expectations for the learning outcomes.";
+        return "The teacher begins by connecting the lesson to students' existing knowledge of {$subject}. A brief discussion on the relevance of {$topic} in the broader field of {$subject} is facilitated. Students are informed of what they will achieve by the end of the lesson, and the teacher sets clear expectations for the learning outcomes.";
     }
 
     private static function generateContentHtml(string $subject, string $class, string $topic, array $subtopics, string $difficulty = 'Medium'): string
@@ -643,7 +643,7 @@ class ContentGenerator
             return [
                 "The study of " . htmlspecialchars($subtopic) . " in Chemistry focuses on the composition, structure, and behaviour of substances. Students analyse how atoms and molecules interact through chemical bonds, reactions, and energy changes, forming the basis for understanding matter at the molecular level.",
                 "In Chemistry, " . htmlspecialchars($subtopic) . " involves understanding the specific properties and transformations of chemical substances. This includes observing reactions, balancing equations, calculating quantities using mole concepts, and predicting outcomes based on chemical principles.",
-                htmlspecialchars($subtopic) . " is fundamental to the Nigerian Chemistry curriculum at the {$class} level. Learners are expected to master the key concepts, perform relevant calculations, and connect theoretical knowledge to practical laboratory observations and real-world applications.",
+                htmlspecialchars($subtopic) . " is fundamental to the standard Chemistry curriculum at the {$class} level. Learners are expected to master the key concepts, perform relevant calculations, and connect theoretical knowledge to practical laboratory observations and real-world applications.",
                 "When studying " . htmlspecialchars($subtopic) . ", Chemistry students must pay careful attention to symbols, formulae, and equations. Understanding the quantitative relationships between reactants and products through stoichiometry is essential for solving numerical problems and interpreting experimental data.",
             ];
         }
@@ -652,7 +652,7 @@ class ContentGenerator
             return [
                 "In Physics, " . htmlspecialchars($subtopic) . " deals with the fundamental laws and principles that govern physical phenomena. Students learn to describe, measure, and predict the behaviour of physical systems using mathematical models and experimental methods.",
                 "The study of " . htmlspecialchars($subtopic) . " requires Physics students to apply mathematical reasoning to physical situations. This involves identifying relevant variables, selecting appropriate formulae, performing calculations with correct units, and interpreting results in a physical context.",
-                htmlspecialchars($subtopic) . " is a core component of the Nigerian Physics syllabus. Students explore the relationships between forces, energy, motion, and other physical quantities through theoretical study and practical laboratory investigations.",
+                htmlspecialchars($subtopic) . " is a core component of the standard Physics syllabus. Students explore the relationships between forces, energy, motion, and other physical quantities through theoretical study and practical laboratory investigations.",
                 "Understanding " . htmlspecialchars($subtopic) . " in Physics helps students explain natural phenomena and technological applications. From the motion of vehicles to the operation of electrical devices, these principles are observable in everyday life and in advanced scientific contexts.",
             ];
         }
@@ -661,7 +661,7 @@ class ContentGenerator
             return [
                 "In Biology, " . htmlspecialchars($subtopic) . " examines the structures and processes that sustain life. Students explore the organization of living organisms from cells to systems, understanding how each level contributes to the functioning of the whole organism.",
                 "The study of " . htmlspecialchars($subtopic) . " in Biology involves investigating the diversity of life, ecological relationships, and the physiological mechanisms that allow organisms to grow, reproduce, and respond to their environment.",
-                htmlspecialchars($subtopic) . " is an important part of the Nigerian Biology curriculum for {$class}. Students learn to identify, describe, and explain the biological principles that underpin health, agriculture, and environmental conservation.",
+                htmlspecialchars($subtopic) . " is an important part of the standard Biology curriculum for {$class}. Students learn to identify, describe, and explain the biological principles that underpin health, agriculture, and environmental conservation.",
                 "When studying " . htmlspecialchars($subtopic) . " in Biology, learners develop skills in observation, classification, and analysis. Laboratory work involving specimens, models, and experiments helps reinforce theoretical knowledge and develops practical scientific skills.",
             ];
         }
@@ -670,7 +670,7 @@ class ContentGenerator
             return [
                 "In Mathematics, " . htmlspecialchars($subtopic) . " requires students to understand and apply specific mathematical procedures and relationships. Mastery comes from practising problems systematically, checking work for accuracy, and building speed and confidence over time.",
                 "The study of " . htmlspecialchars($subtopic) . " in Mathematics involves learning the relevant formulae, methods, and problem-solving strategies. Students should work through examples step by step, paying attention to each stage of the calculation or proof process.",
-                htmlspecialchars($subtopic) . " is a key topic in the Nigerian Mathematics curriculum for {$class}. Regular practice with varied problems helps students develop fluency and the ability to apply mathematical thinking to both theoretical questions and real-life situations.",
+                htmlspecialchars($subtopic) . " is a key topic in the standard Mathematics curriculum for {$class}. Regular practice with varied problems helps students develop fluency and the ability to apply mathematical thinking to both theoretical questions and real-life situations.",
                 "When studying " . htmlspecialchars($subtopic) . " in Mathematics, learners should focus on understanding the underlying principles rather than memorizing steps. Connecting mathematical concepts to practical applications makes learning more meaningful and improves long-term retention.",
             ];
         }
@@ -679,7 +679,7 @@ class ContentGenerator
             return [
                 "In English Language, " . htmlspecialchars($subtopic) . " focuses on developing competence in understanding and using the English language effectively. This includes mastering the rules, structures, and conventions that govern communication in both spoken and written forms.",
                 "The study of " . htmlspecialchars($subtopic) . " helps students improve their reading comprehension, writing skills, and oral communication. Learners are encouraged to practise regularly through reading, writing exercises, and class discussions.",
-                htmlspecialchars($subtopic) . " is an essential component of the Nigerian English Language curriculum. Mastery of this area enables students to express themselves clearly, understand complex texts, and perform well in examinations.",
+                htmlspecialchars($subtopic) . " is an essential component of the standard English Language curriculum. Mastery of this area enables students to express themselves clearly, understand complex texts, and perform well in examinations.",
                 "When studying " . htmlspecialchars($subtopic) . " in English Language, students should pay attention to examples and practise applying the rules in their own writing and speech. Regular practice and exposure to varied texts reinforces learning and builds confidence.",
             ];
         }
@@ -688,7 +688,7 @@ class ContentGenerator
             return [
                 "In Economics, " . htmlspecialchars($subtopic) . " deals with the principles that govern the production, distribution, and consumption of goods and services. Students analyse how individuals, businesses, and governments make decisions about resource allocation in the face of scarcity.",
                 "The study of " . htmlspecialchars($subtopic) . " in Economics requires students to understand key concepts, interpret data, and apply economic models to real-world situations. Learners should be able to explain economic phenomena using appropriate terminology and analytical frameworks.",
-                htmlspecialchars($subtopic) . " is a significant area in the Nigerian Economics curriculum. Students explore how economic principles apply to the Nigerian context, including issues related to development, trade, monetary policy, and financial markets.",
+                htmlspecialchars($subtopic) . " is a significant area in the standard Economics curriculum. Students explore how economic principles apply to real-world contexts, including issues related to development, trade, monetary policy, and financial markets.",
             ];
         }
 
@@ -696,7 +696,7 @@ class ContentGenerator
             return [
                 "In Government, " . htmlspecialchars($subtopic) . " examines the structures, processes, and institutions through which societies are governed. Students learn about political systems, constitutions, the rule of law, and the rights and responsibilities of citizens.",
                 "The study of " . htmlspecialchars($subtopic) . " in Government provides learners with an understanding of how political power is organized and exercised. This includes analysing different forms of government, the electoral process, and the role of citizens in a democracy.",
-                htmlspecialchars($subtopic) . " is an integral part of the Nigerian Government curriculum. Students explore the historical development of Nigeria's political system, the structure of government at federal and state levels, and contemporary political issues.",
+                htmlspecialchars($subtopic) . " is an integral part of the standard Government curriculum. Students explore the historical development of political systems, the structure of government at various levels, and contemporary political issues.",
             ];
         }
 
@@ -704,15 +704,15 @@ class ContentGenerator
             return [
                 "In Geography, " . htmlspecialchars($subtopic) . " involves the study of the Earth's physical features, atmosphere, and human activities across different regions. Students learn to interpret maps, analyse spatial patterns, and understand the relationships between people and their environment.",
                 "The study of " . htmlspecialchars($subtopic) . " in Geography requires learners to develop skills in observation, data collection, and map reading. Fieldwork and the use of geographical tools help students connect theoretical knowledge to real-world observations.",
-                htmlspecialchars($subtopic) . " is a key component of the Geography curriculum in Nigerian schools. Students explore both the physical geography of Nigeria and the human geographical factors that shape settlement patterns, economic activities, and environmental management.",
+                htmlspecialchars($subtopic) . " is a key component of the Geography curriculum n schools. Students explore both the physical geography and the human geographical factors that shape settlement patterns, economic activities, and environmental management.",
             ];
         }
 
         if (str_contains($subj, 'history')) {
             return [
                 "In History, " . htmlspecialchars($subtopic) . " explores past events, societies, and developments that have shaped the present. Students learn to analyse historical sources, understand cause and effect, and develop perspective on contemporary issues through the study of the past.",
-                "The study of " . htmlspecialchars($subtopic) . " in History provides insight into the political, social, economic, and cultural developments that have influenced Nigeria and the wider world. Learners develop critical thinking skills through the evaluation of evidence and interpretation of historical narratives.",
-                htmlspecialchars($subtopic) . " is a significant area of the Nigerian History curriculum. Students examine key events, personalities, and movements in Nigerian history, from pre-colonial times through independence to the present day.",
+                "The study of " . htmlspecialchars($subtopic) . " in History provides insight into the political, social, economic, and cultural developments that have influenced societies and the wider world. Learners develop critical thinking skills through the evaluation of evidence and interpretation of historical narratives.",
+                htmlspecialchars($subtopic) . " is a significant area of the History curriculum. Students examine key events, personalities, and movements n history, from pre-colonial times through independence to the present day.",
             ];
         }
 
@@ -769,12 +769,12 @@ class ContentGenerator
                 "Supply and demand determine the prices of goods and services in a market economy.",
                 "Understanding economic principles helps individuals make informed financial decisions.",
                 "Government policies influence economic growth, employment, and price stability.",
-                "Nigeria's economy is shaped by both domestic policies and global economic trends.",
+                "The economy is shaped by both domestic policies and global economic trends.",
             ];
         } elseif (str_contains($subj, 'govern') || str_contains($subj, 'civic')) {
             $pool = [
                 "Government is the system through which a society is organized and governed.",
-                "The Nigerian Constitution outlines the structure and powers of the three arms of government.",
+                "The constitution outlines the structure and powers of the three arms of government.",
                 "Citizenship comes with both rights and responsibilities in a democratic society.",
                 "The rule of law ensures that all persons and institutions are accountable to the law.",
                 "Active civic participation strengthens democracy and promotes good governance.",
@@ -829,7 +829,7 @@ class ContentGenerator
             6 => "Solve for x: 3x + 7 = 22. Solution: 3x + 7 = 22 → 3x = 22 - 7 → 3x = 15 → x = 15 ÷ 3 → x = 5. Answer: x = 5. Check: 3(5) + 7 = 15 + 7 = 22. Correct.",
             7 => "Find the area of a rectangle with length 12 cm and width 8 cm. Solution: Area = length × width = 12 cm × 8 cm = 96 cm². The area of the rectangle is 96 square centimetres.",
             8 => "Simplify: 2/3 + 3/4. Solution: LCM of 3 and 4 is 12. 2/3 = 8/12, 3/4 = 9/12. 8/12 + 9/12 = 17/12 = 1 5/12. Answer: 1 5/12.",
-            9 => "A man bought a television for ₦85,000 and sold it for ₦93,500. What is his percentage profit? Profit = ₦93,500 - ₦85,000 = ₦8,500. Percentage profit = (₦8,500 ÷ ₦85,000) × 100 = 10%. Answer: 10% profit.",
+            9 => "A man bought a television for $850 and sold it for $935. What is his percentage profit? Profit = $935 - $850 = $85. Percentage profit = ($85 ÷ $850) × 100 = 10%. Answer: 10% profit.",
             10 => "Calculate the volume of a cylinder with radius 7 cm and height 10 cm. (Take π = 22/7) Solution: Volume = πr²h = (22/7) × 7² × 10 = (22/7) × 49 × 10 = 22 × 7 × 10 = 1,540 cm³. The volume is 1,540 cubic centimetres.",
         ];
         return $examples[$num] ?? "Worked example {$num}: Apply the principles of {$topic} step by step. First, identify the given values. Second, recall the appropriate formula. Third, substitute and compute. Fourth, verify your answer. Practice makes perfect!";
@@ -868,9 +868,9 @@ class ContentGenerator
     private static function getTopicExample(string $subject, string $topic, int $num, string $class): string
     {
         $examples = [
-            "A student in {$class} wants to understand {$topic}. Here is a simple way to think about it using everyday items found in a Nigerian home. Relating new concepts to familiar objects helps make learning more meaningful and memorable.",
+            "A student in {$class} wants to understand {$topic}. Here is a simple way to think about it using everyday items found in a home. Relating new concepts to familiar objects helps make learning more meaningful and memorable.",
             "In a {$class} classroom, students can demonstrate their understanding of {$topic} by working through exercises from their textbook. This practical approach helps reinforce the concept through active learning.",
-            "Let us apply {$topic} to a real situation: Consider how this concept appears in the daily life of a Nigerian family, business, or community. Understanding the practical relevance of topics makes {$subject} more engaging and valuable.",
+            "Let us apply {$topic} to a real situation: Consider how this concept appears in the daily life of a family, business, or community. Understanding the practical relevance of topics makes {$subject} more engaging and valuable.",
         ];
         return $examples[($num - 1) % count($examples)];
     }
@@ -994,7 +994,7 @@ class ContentGenerator
                 "This section examines the chemical nature of {$topic}, focusing on its composition, structure, and the principles that govern its behaviour in chemical reactions.",
                 "Here we explore the properties and characteristics of {$topic}, including how it interacts with other substances and the conditions that affect these interactions.",
                 "This part covers the quantitative aspects of {$topic}, including relevant calculations, measurements, and the application of chemical formulae and equations.",
-                "The practical importance of {$topic} is examined through its applications in industry, medicine, agriculture, and everyday life in Nigeria.",
+                "The practical importance of {$topic} is examined through its applications in industry, medicine, agriculture, and everyday life .",
                 "This section deals with laboratory procedures, observations, and experimental techniques related to the study of {$topic}.",
             ];
         } elseif (str_contains($subj, 'physic')) {
@@ -1272,7 +1272,7 @@ class ContentGenerator
              'correct' => '{$topic} in {$subject} connects to other subjects by sharing principles and applications that are relevant across the broader school curriculum.',
              'wrong' => [
                 '{$topic} does not connect to any other subject in any way',
-                '{$topic} only connects to subjects that are not taught in Nigerian schools',
+                '{$topic} only connects to subjects that are not taught n schools',
                 '{$topic} replaces the need to study any other subject',
              ]],
 
@@ -1366,11 +1366,11 @@ class ContentGenerator
         return [
             [
                 'question' => "Explain in detail the concept of {$topic} as it applies to {$subject}. Include its definition, key characteristics, and importance.",
-                'answer' => "{$topic} is a fundamental concept in {$subject} that encompasses various aspects including principles, applications, and real-world relevance. In the Nigerian curriculum context, {$topic} is taught across multiple class levels with increasing depth and complexity, preparing students for both examinations and practical application."
+                'answer' => "{$topic} is a fundamental concept in {$subject} that encompasses various aspects including principles, applications, and real-world relevance. In the standard curriculum, {$topic} is taught across multiple class levels with increasing depth and complexity, preparing students for both examinations and practical application."
             ],
             [
-                'question' => "Discuss the practical applications of {$topic} in everyday life, with specific reference to Nigeria.",
-                'answer' => "{$topic} has numerous practical applications in everyday life. In Nigeria, {$topic} can be observed in areas such as education, business, technology, and community development. Understanding {$topic} helps students appreciate how {$subject} concepts apply to real-world situations and prepares them for higher education and careers in various fields."
+                'question' => "Discuss the practical applications of {$topic} in everyday life, with specific real-world examples.",
+                'answer' => "{$topic} has numerous practical applications in everyday life. {$topic} can be observed in areas such as education, business, technology, and community development. Understanding {$topic} helps students appreciate how {$subject} concepts apply to real-world situations and prepares them for higher education and careers in various fields."
             ],
         ];
     }
@@ -1380,7 +1380,7 @@ class ContentGenerator
         return [
             [
                 'question' => "Write a comprehensive essay on the importance of {$topic} in {$subject}.",
-                'guidance' => "Include definition, key concepts, types/classifications, importance, real-world examples, and relevance to the Nigerian context. Support your points with specific examples."
+                'guidance' => "Include definition, key concepts, types/classifications, importance, real-world examples, and relevance to real-world contexts. Support your points with specific examples."
             ],
         ];
     }
@@ -1394,7 +1394,7 @@ class ContentGenerator
                     'a' => "Define {$topic}",
                     'b' => "List five key features of {$topic}",
                     'c' => "Explain three importance of {$topic}",
-                    'd' => "Give two practical examples of {$topic} from the Nigerian context",
+                    'd' => "Give two practical examples of {$topic} from real-world contexts",
                 ],
             ],
         ];
@@ -1409,8 +1409,8 @@ class ContentGenerator
         if (str_contains($subj, 'biology') || str_contains($subj, 'science')) return ['Specimens and models', 'Magnifying glass/microscope', 'Charts of biological systems', 'Dissection tools'];
         if (str_contains($subj, 'english') || str_contains($subj, 'literature')) return ['Reading passages', 'Dictionary', 'Grammar charts', 'Storybooks', 'Thesaurus'];
         if (str_contains($subj, 'geograph')) return ['Maps and globes', 'Atlas', 'Compass', 'Weather charts', 'Satellite images'];
-        if (str_contains($subj, 'history')) return ['Timeline charts', 'Historical pictures', 'Textbook with Nigerian history', 'Primary source documents'];
-        if (str_contains($subj, 'govern') || str_contains($subj, 'civic')) return ['Nigerian Constitution booklet', 'Posters of government structures', 'Newspaper cuttings', 'Voter education materials'];
+        if (str_contains($subj, 'history')) return ['Timeline charts', 'Historical pictures', 'Textbook with history', 'Primary source documents'];
+        if (str_contains($subj, 'govern') || str_contains($subj, 'civic')) return ['Constitution booklet', 'Posters of government structures', 'Newspaper cuttings', 'Voter education materials'];
         if (str_contains($subj, 'econom')) return ['Graph charts', 'Price lists', 'Newspaper business sections', 'Economic indicators data'];
         if (str_contains($subj, 'account') || str_contains($subj, 'commerce')) return ['Sample ledgers and journals', 'Invoice templates', 'Business transaction examples', 'Financial statements'];
         if (str_contains($subj, 'agric')) return ['Farm tools and equipment', 'Seed samples', 'Posters of crop/livestock', 'Soil samples'];
