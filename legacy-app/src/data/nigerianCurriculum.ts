@@ -11,7 +11,7 @@ export const EDUCATION_LEVELS: EducationLevelConfig[] = [
   {
     id: "nursery",
     name: "Nursery School",
-    classes: ["Nursery 1", "Nursery 2"],
+    classes: ["Reception", "Foundation", "Nursery 1", "Nursery 2"],
     subjects: [
       "Numeracy",
       "Literacy",

@@ -24,6 +24,8 @@ class CurriculumData
     public static function getClasses(): array
     {
         return [
+            // Nursery domain - ordered lowest to highest: Reception -> Foundation -> Nursery 1 -> Nursery 2
+            'Reception', 'Foundation', 'Nursery 1', 'Nursery 2',
             'Primary 1', 'Primary 2', 'Primary 3', 'Primary 4', 'Primary 5', 'Primary 6',
             'JSS1', 'JSS2', 'JSS3',
             'SS1', 'SS2', 'SS3',
@@ -42,6 +44,7 @@ class CurriculumData
 
     public static function getClassCategory(string $class): string
     {
+        if (in_array($class, ['Reception', 'Foundation', 'Nursery 1', 'Nursery 2'], true)) return 'nursery';
         if (str_starts_with($class, 'Primary')) return 'primary';
         if (str_starts_with($class, 'JSS')) return 'junior';
         if (str_starts_with($class, 'SS')) return 'senior';
@@ -51,6 +54,10 @@ class CurriculumData
     public static function getAgeRange(string $class): string
     {
         return match (true) {
+            $class === 'Reception' => '2 – 3 years',
+            $class === 'Foundation' => '3 – 4 years',
+            $class === 'Nursery 1' => '4 – 5 years',
+            $class === 'Nursery 2' => '5 – 6 years',
             $class === 'Primary 1' => '6 – 7 years',
             $class === 'Primary 2' => '7 – 8 years',
             $class === 'Primary 3' => '8 – 9 years',
@@ -73,6 +80,7 @@ class CurriculumData
             $classLevel = self::getClassCategory($class);
             $termIndex = array_search($term, self::getTerms());
             $classBase = match(true) {
+                in_array($class, ['Reception', 'Foundation', 'Nursery 1', 'Nursery 2'], true) => 'nursery',
                 str_starts_with($class, 'Primary') => 'primary',
                 str_starts_with($class, 'JSS') => 'jss',
                 str_starts_with($class, 'SS') => 'ss',
@@ -202,6 +210,7 @@ Term: {$term}
 Topic: {$topic}
 
 Educational Level Context:
+- NURSERY (Reception, Foundation, Nursery 1-2): Play-based, sensory, early literacy/numeracy, ages 2-6, very simple language and concrete play examples (Reception lowest)
 - PRIMARY (Primary 1-6): Foundational concepts, simple language, concrete examples, play-based learning, basic literacy and numeracy
 - JUNIOR SECONDARY (JSS1-3): Intermediate concepts, introduction to abstract thinking, subject specialization begins
 - SENIOR SECONDARY (SS1-3): Advanced concepts, critical thinking, examination preparation (WAEC/NECO/JAMB)
