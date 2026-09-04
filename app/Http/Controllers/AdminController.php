@@ -49,12 +49,16 @@ class AdminController extends Controller
 
     public function apiUsers()
     {
+        $user = Session::get('user');
+        if (!$user || ($user['role'] ?? '') !== 'admin') return response()->json(['error' => 'Unauthorized'], 403);
         JsonDb::init();
         return response()->json(['users' => JsonDb::get()['users']]);
     }
 
     public function apiStats()
     {
+        $user = Session::get('user');
+        if (!$user || ($user['role'] ?? '') !== 'admin') return response()->json(['error' => 'Unauthorized'], 403);
         JsonDb::init();
         $db = JsonDb::get();
         return response()->json([

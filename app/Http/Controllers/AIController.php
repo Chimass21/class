@@ -576,6 +576,9 @@ class AIController extends Controller
                 Log::error('Question set not found for conversion', ['id' => $data['questionSetId']]);
                 return response()->json(['success' => false, 'error' => 'Question set not found.'], 404);
             }
+            if (($user['role'] ?? '') !== 'admin' && ($qs['teacherId'] ?? '') !== ($user['id'] ?? '')) {
+                return response()->json(['success' => false, 'error' => 'This question set is private to its owner'], 403);
+            }
 
             // Get all questions — they were already normalized on save
             $allQuestions = $qs['questions'] ?? [];
@@ -672,10 +675,15 @@ class AIController extends Controller
 
     public function getQuestionSet($id)
     {
+        $user = Session::get('user');
+        if (!$user) return response()->json(['success' => false, 'error' => 'Unauthorized'], 401);
         JsonDb::init();
         $db = JsonDb::get();
         foreach ($db['questionSets'] as $qs) {
             if ($qs['id'] === $id) {
+                if (($user['role'] ?? '') !== 'admin' && ($qs['teacherId'] ?? '') !== ($user['id'] ?? '')) {
+                    return response()->json(['success' => false, 'error' => 'This question set is private to its owner'], 403);
+                }
                 return response()->json(['questionSet' => $qs]);
             }
         }
@@ -1950,8 +1958,15 @@ PROMPT;
 
     public function deleteLessonNote($noteId)
     {
+        $user = Session::get('user');
+        if (!$user) return response()->json(['success' => false, 'error' => 'Unauthorized'], 401);
         JsonDb::init();
         $db = JsonDb::get();
+        $found = null;
+        foreach ($db['lessonNotes'] as $n) { if ($n['id'] === $noteId) { $found = $n; break; } }
+        if ($found && ($user['role'] ?? '') !== 'admin' && ($found['teacherId'] ?? '') !== ($user['id'] ?? '')) {
+            return response()->json(['success' => false, 'error' => 'You can only delete your own lesson notes'], 403);
+        }
         $db['lessonNotes'] = array_values(array_filter($db['lessonNotes'], fn($n) => $n['id'] !== $noteId));
         JsonDb::save($db);
         return response()->json(['success' => true, 'message' => 'Lesson note deleted.']);
@@ -1959,8 +1974,15 @@ PROMPT;
 
     public function deleteLessonPlan($planId)
     {
+        $user = Session::get('user');
+        if (!$user) return response()->json(['success' => false, 'error' => 'Unauthorized'], 401);
         JsonDb::init();
         $db = JsonDb::get();
+        $found = null;
+        foreach ($db['lessonPlans'] as $p) { if ($p['id'] === $planId) { $found = $p; break; } }
+        if ($found && ($user['role'] ?? '') !== 'admin' && ($found['teacherId'] ?? '') !== ($user['id'] ?? '')) {
+            return response()->json(['success' => false, 'error' => 'You can only delete your own lesson plans'], 403);
+        }
         $db['lessonPlans'] = array_values(array_filter($db['lessonPlans'], fn($p) => $p['id'] !== $planId));
         JsonDb::save($db);
         return response()->json(['success' => true, 'message' => 'Lesson plan deleted.']);

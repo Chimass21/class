@@ -31,6 +31,12 @@ class StudentController extends Controller
             }
         }
         if (!$exam) abort(404);
+        if (empty($exam['isPublished'])) {
+            $checkUser = Session::get('user');
+            if (!$checkUser || (($checkUser['role'] ?? '') !== 'admin' && ($exam['creatorId'] ?? '') !== ($checkUser['id'] ?? ''))) {
+                abort(403, 'This exam is not yet published and is private to its owner.');
+            }
+        }
 
         $user = Session::get('user');
 

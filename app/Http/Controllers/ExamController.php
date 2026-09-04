@@ -55,10 +55,14 @@ class ExamController extends Controller
 
     public function publish($examId)
     {
+        $user = Session::get('user');
         JsonDb::init();
         $db = JsonDb::get();
         foreach ($db['exams'] as &$exam) {
             if ($exam['id'] === $examId) {
+                if (($user['role'] ?? '') !== 'admin' && ($exam['creatorId'] ?? '') !== ($user['id'] ?? '')) {
+                    abort(403, 'You can only publish your own exams.');
+                }
                 $exam['isPublished'] = true;
                 break;
             }
@@ -69,8 +73,15 @@ class ExamController extends Controller
 
     public function destroy($examId)
     {
+        $user = Session::get('user');
         JsonDb::init();
         $db = JsonDb::get();
+        // Verify ownership
+        $found = null;
+        foreach ($db['exams'] as $e) { if ($e['id'] === $examId) { $found = $e; break; } }
+        if ($found && ($user['role'] ?? '') !== 'admin' && ($found['creatorId'] ?? '') !== ($user['id'] ?? '')) {
+            abort(403, 'You can only delete your own exams.');
+        }
         $db['exams'] = array_filter($db['exams'], fn($e) => $e['id'] !== $examId);
         $db['results'] = array_filter($db['results'], fn($r) => $r['examId'] !== $examId);
         JsonDb::save($db);
@@ -122,11 +133,16 @@ class ExamController extends Controller
             'instructions' => 'nullable|string',
         ]);
 
+        $user = Session::get('user');
+        if (!$user) return response()->json(['success' => false, 'error' => 'Unauthorized'], 401);
         JsonDb::init();
         $db = JsonDb::get();
         $updated = false;
         foreach ($db['exams'] as &$exam) {
             if ($exam['id'] === $examId) {
+                if (($user['role'] ?? '') !== 'admin' && ($exam['creatorId'] ?? '') !== ($user['id'] ?? '')) {
+                    return response()->json(['success' => false, 'error' => 'You can only edit your own exams'], 403);
+                }
                 $exam['duration'] = (int)$request->duration;
                 $exam['defaultMarks'] = (int)$request->defaultMarks;
                 if ($request->title) $exam['title'] = $request->title;
@@ -143,10 +159,15 @@ class ExamController extends Controller
 
     public function apiPublish($examId)
     {
+        $user = Session::get('user');
+        if (!$user) return response()->json(['success' => false, 'error' => 'Unauthorized'], 401);
         JsonDb::init();
         $db = JsonDb::get();
         foreach ($db['exams'] as &$exam) {
             if ($exam['id'] === $examId) {
+                if (($user['role'] ?? '') !== 'admin' && ($exam['creatorId'] ?? '') !== ($user['id'] ?? '')) {
+                    return response()->json(['success' => false, 'error' => 'You can only publish your own exams'], 403);
+                }
                 $exam['isPublished'] = true;
                 break;
             }
@@ -157,8 +178,15 @@ class ExamController extends Controller
 
     public function apiDestroy($examId)
     {
+        $user = Session::get('user');
+        if (!$user) return response()->json(['success' => false, 'error' => 'Unauthorized'], 401);
         JsonDb::init();
         $db = JsonDb::get();
+        $found = null;
+        foreach ($db['exams'] as $e) { if ($e['id'] === $examId) { $found = $e; break; } }
+        if ($found && ($user['role'] ?? '') !== 'admin' && ($found['creatorId'] ?? '') !== ($user['id'] ?? '')) {
+            return response()->json(['success' => false, 'error' => 'You can only delete your own exams'], 403);
+        }
         $db['exams'] = array_values(array_filter($db['exams'], fn($e) => $e['id'] !== $examId));
         $db['results'] = array_values(array_filter($db['results'], fn($r) => $r['examId'] !== $examId));
         JsonDb::save($db);
@@ -168,7 +196,26 @@ class ExamController extends Controller
     public function apiIndex()
     {
         JsonDb::init();
-        return response()->json(['exams' => JsonDb::get()['exams']]);
+        $db = JsonDb::get();
+        $user = Session::get('user');
+        $role = $user['role'] ?? '';
+        $uid = $user['id'] ?? '';
+        $exams = $db['exams'] ?? [];
+        if (!$user) {
+            // Guest sees only published exams (without correct answers ideally, but at least filtered)
+            $filtered = array_filter($exams, fn($e) => !empty($e['isPublished']));
+            return response()->json(['exams' => array_values($filtered)]);
+        }
+        if ($role === 'admin') {
+            return response()->json(['exams' => $exams]);
+        }
+        if ($role === 'teacher') {
+            $filtered = array_filter($exams, fn($e) => ($e['creatorId'] ?? '') === $uid);
+            return response()->json(['exams' => array_values($filtered)]);
+        }
+        // student
+        $filtered = array_filter($exams, fn($e) => !empty($e['isPublished']));
+        return response()->json(['exams' => array_values($filtered)]);
     }
 
     public function apiShow($examId)
@@ -180,6 +227,17 @@ class ExamController extends Controller
             if ($e['id'] === $examId) {
                 $exam = $e;
                 break;
+            }
+        }
+        if (!$exam) return response()->json(null, 404);
+        $user = Session::get('user');
+        $role = $user['role'] ?? '';
+        $uid = $user['id'] ?? '';
+        // Private-by-default: unpublished drafts only visible to owner/admin
+        if (empty($exam['isPublished'])) {
+            if (!$user) return response()->json(['error' => 'Unauthorized'], 401);
+            if ($role !== 'admin' && ($exam['creatorId'] ?? '') !== $uid) {
+                return response()->json(['error' => 'This exam is private to its owner'], 403);
             }
         }
         return response()->json($exam);
@@ -201,8 +259,14 @@ class ExamController extends Controller
         }
 
         $answers = $request->input('answers', []);
-        $studentId = $request->input('studentId', 'usr_guest');
-        $studentName = $request->input('studentName', 'Guest');
+        $sessionUser = Session::get('user');
+        $studentId = $sessionUser['id'] ?? $request->input('studentId', 'usr_guest');
+        $studentName = $sessionUser['name'] ?? $request->input('studentName', 'Guest');
+        // Prevent IDOR: if session exists, force studentId to session id
+        if ($sessionUser && ($request->input('studentId') && $request->input('studentId') !== $sessionUser['id'])) {
+            $studentId = $sessionUser['id'];
+            $studentName = $sessionUser['name'];
+        }
         $timeSpent = $request->input('timeSpent', 0);
         $submissionId = $request->input('submissionId', '');
 
@@ -298,7 +362,11 @@ class ExamController extends Controller
     {
         try {
             $answers = $request->input('answers', []);
-            $studentId = $request->input('studentId', 'usr_guest');
+            $sessionUser = Session::get('user');
+            $studentId = $sessionUser['id'] ?? $request->input('studentId', 'usr_guest');
+            if ($sessionUser && $request->input('studentId') && $request->input('studentId') !== $sessionUser['id']) {
+                $studentId = $sessionUser['id'];
+            }
 
             JsonDb::init();
             $db = JsonDb::get();
@@ -323,7 +391,11 @@ class ExamController extends Controller
 
     public function apiLoadAutoSave(Request $request, $examId)
     {
-        $studentId = $request->input('studentId', 'usr_guest');
+        $sessionUser = Session::get('user');
+        $studentId = $sessionUser['id'] ?? $request->input('studentId', 'usr_guest');
+        if ($sessionUser && $request->input('studentId') && $request->input('studentId') !== $sessionUser['id'] && ($sessionUser['role'] ?? '') !== 'admin') {
+            $studentId = $sessionUser['id'];
+        }
         JsonDb::init();
         $db = JsonDb::get();
         $key = 'autosave_' . $examId . '_' . $studentId;

@@ -13,6 +13,7 @@ class DownloadController extends Controller
 {
     public function downloadLessonNote($id, $format)
     {
+        $user = \Illuminate\Support\Facades\Session::get('user');
         JsonDb::init();
         $db = JsonDb::get();
         $note = null;
@@ -20,6 +21,10 @@ class DownloadController extends Controller
             if ($n['id'] === $id) { $note = $n; break; }
         }
         if (!$note) return abort(404);
+        if ($user && ($user['role'] ?? '') !== 'admin' && ($note['teacherId'] ?? '') !== ($user['id'] ?? '')) {
+            abort(403, 'This lesson note is private to its owner.');
+        }
+        if (!$user) abort(401);
 
         $html = $this->buildNoteHtml($note);
         if ($format === 'pdf') return $this->downloadPdf($html, 'lesson_note_' . $id);
@@ -29,6 +34,7 @@ class DownloadController extends Controller
 
     public function downloadLessonPlan($id, $format)
     {
+        $user = \Illuminate\Support\Facades\Session::get('user');
         JsonDb::init();
         $db = JsonDb::get();
         $plan = null;
@@ -36,6 +42,10 @@ class DownloadController extends Controller
             if ($p['id'] === $id) { $plan = $p; break; }
         }
         if (!$plan) return abort(404);
+        if ($user && ($user['role'] ?? '') !== 'admin' && ($plan['teacherId'] ?? '') !== ($user['id'] ?? '')) {
+            abort(403, 'This lesson plan is private to its owner.');
+        }
+        if (!$user) abort(401);
 
         if ($format === 'pdf') {
             $html = $this->buildPlanHtml($plan);
@@ -49,6 +59,7 @@ class DownloadController extends Controller
 
     public function downloadExam($id, $format)
     {
+        $user = \Illuminate\Support\Facades\Session::get('user');
         JsonDb::init();
         $db = JsonDb::get();
         $exam = null;
@@ -56,6 +67,15 @@ class DownloadController extends Controller
             if ($e['id'] === $id) { $exam = $e; break; }
         }
         if (!$exam) return abort(404);
+        // Private-by-default: unpublished exams only owner/admin; published exams require login
+        if (empty($exam['isPublished'])) {
+            if (!$user) abort(401);
+            if (($user['role'] ?? '') !== 'admin' && ($exam['creatorId'] ?? '') !== ($user['id'] ?? '')) {
+                abort(403, 'This exam is private to its owner.');
+            }
+        } else {
+            if (!$user) abort(401);
+        }
 
         $html = $this->buildExamHtml($exam);
         if ($format === 'pdf') return $this->downloadPdf($html, 'exam_' . $id);
@@ -65,6 +85,8 @@ class DownloadController extends Controller
 
     public function downloadGradedScript($examId, $resultId, $format = 'pdf')
     {
+        $user = \Illuminate\Support\Facades\Session::get('user');
+        if (!$user) abort(401);
         JsonDb::init();
         $db = JsonDb::get();
 
@@ -79,6 +101,13 @@ class DownloadController extends Controller
             if ($r['id'] === $resultId && ($r['examId'] ?? '') === $examId) { $result = $r; break; }
         }
         if (!$result) return abort(404, 'Result not found');
+        // Only student owner, exam owner, or admin can download
+        $isOwner = ($result['studentId'] ?? '') === ($user['id'] ?? '');
+        $isExamOwner = ($exam['creatorId'] ?? '') === ($user['id'] ?? '');
+        $isAdmin = ($user['role'] ?? '') === 'admin';
+        if (!$isOwner && !$isExamOwner && !$isAdmin) {
+            abort(403, 'This result is private to its owner.');
+        }
 
         $html = $this->buildGradedScriptHtml($exam, $result);
         if ($format === 'pdf') {
