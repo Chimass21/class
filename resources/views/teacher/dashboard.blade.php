@@ -1065,10 +1065,9 @@ function copyPlanContent() {
 async function sharePlan() {
     if (!currentPlanId) return;
     const url = '/api/download/lesson-plan/' + currentPlanId + '/docx';
-    const absoluteUrl = window.location.origin + url;
     const plan = teacherData.plans.find(p => p.id === currentPlanId);
     const title = plan ? plan.topic : 'Lesson Plan';
-    // 1) Try direct DOCX file share — system sheet shows WhatsApp, Email, etc. with file attached (tabular, not scattered)
+    // Direct DOCX file share — recipient sees file immediately (tabular, not a link)
     try {
         const res = await fetch(url, { credentials: 'same-origin' });
         if (res.ok) {
@@ -1081,24 +1080,18 @@ async function sharePlan() {
             if (navigator.share) {
                 try { await navigator.share({ files: [file], title: title }); return; } catch(e) {}
             }
-        }
-    } catch(e) { console.log('File share failed', e); }
-    // 2) Fallback: share link via system sheet (also shows WhatsApp/Email)
-    try {
-        if (navigator.share) {
-            await navigator.share({ title: title, text: title + ' - Download DOCX tabular lesson plan', url: absoluteUrl });
+            // Fallback for browsers without file-share: download file so user can attach directly to WhatsApp/Email
+            // This ensures recipient gets the DOCX file itself, not a link to the website
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = title.replace(/[^a-z0-9]/gi,'_').substring(0,30) + '.docx';
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+            alert('Direct file share not supported on this browser. DOCX tabular file downloaded.\n\nPlease open WhatsApp or Email and attach the file from your Downloads folder.\nThe recipient will receive the DOCX file immediately — not a link.');
             return;
         }
-    } catch(e) {}
-    // 3) Final fallback: let user choose WhatsApp or Email directly
-    const choice = prompt('Share Lesson Plan DOCX:\n1 = WhatsApp (opens wa.me with link)\n2 = Email (opens mail app)\n3 = Download DOCX\n\nEnter 1, 2 or 3:', '1');
-    if (choice === '1') {
-        window.open('https://wa.me/?text=' + encodeURIComponent(title + ' - Lesson Plan DOCX tabular: ' + absoluteUrl), '_blank');
-    } else if (choice === '2') {
-        window.location.href = 'mailto:?subject=' + encodeURIComponent(title + ' - Lesson Plan') + '&body=' + encodeURIComponent('Download the tabular DOCX lesson plan:\n' + absoluteUrl + '\n\nIf the link requires login, download from the dashboard and forward the file.');
-    } else {
-        window.open(url, '_blank');
-    }
+    } catch(e) { console.log('File share failed', e); }
+    window.open(url, '_blank');
 }
 
 // ====== LESSON NOTE ======
