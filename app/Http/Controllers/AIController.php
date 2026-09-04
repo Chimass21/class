@@ -1988,6 +1988,23 @@ PROMPT;
         return response()->json(['success' => true, 'message' => 'Lesson plan deleted.']);
     }
 
+    public function deleteQuestionSet($id)
+    {
+        $user = Session::get('user');
+        if (!$user) return response()->json(['success' => false, 'error' => 'Unauthorized'], 401);
+        JsonDb::init();
+        $db = JsonDb::get();
+        $found = null;
+        foreach ($db['questionSets'] ?? [] as $qs) { if ($qs['id'] === $id) { $found = $qs; break; } }
+        if (!$found) return response()->json(['success' => false, 'error' => 'Question set not found'], 404);
+        if (($user['role'] ?? '') !== 'admin' && ($found['teacherId'] ?? '') !== ($user['id'] ?? '')) {
+            return response()->json(['success' => false, 'error' => 'You can only delete your own question sets'], 403);
+        }
+        $db['questionSets'] = array_values(array_filter($db['questionSets'] ?? [], fn($qs) => ($qs['id'] ?? '') !== $id));
+        JsonDb::save($db);
+        return response()->json(['success' => true, 'message' => 'Question set deleted.']);
+    }
+
     /**
      * Last-resort fallback when AI fails to produce valid questions.
      * Tries one final AI call with a minimal prompt, then falls back to ContentGenerator.

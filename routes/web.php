@@ -129,6 +129,7 @@ Route::prefix('api')->group(function () {
     Route::get('/download/graded-script/{examId}/{resultId}/{format?}', [DownloadController::class, 'downloadGradedScript']);
     Route::delete('/lesson-notes/{id}', [AIController::class, 'deleteLessonNote']);
     Route::delete('/lesson-plans/{id}', [AIController::class, 'deleteLessonPlan']);
+    Route::delete('/questions/sets/{id}', [AIController::class, 'deleteQuestionSet']);
 
     // CSV Import
     Route::get('/csv-import/template', [CsvImportController::class, 'downloadTemplate']);
