@@ -14,10 +14,13 @@ class CurriculumData
             'Social Studies', 'Home Economics', 'Physical Education',
             'Christian Religious Studies', 'Islamic Studies',
             'French', 'Yoruba', 'Igbo', 'Hausa', 'Music', 'Art & Design',
-            'Intermediate Science', 'Cultural and Creative Arts (CCA)',
+            'Intermediate Science', 'Cultural and Creative Arts (CCA)', 'CCA',
             'Nigerian History', 'Artificial Intelligence', 'Phonics',
-            'Vocational Studies', 'Physical and Health Education (PHE)',
-            'Coding', 'Verbal Reasoning', 'Craft and Art',
+            'Vocational Studies', 'Physical and Health Education (PHE)', 'PHE',
+            'Coding', 'Verbal Reasoning', 'Quantitative Reasoning', 'Craft and Art',
+            // New domain subjects requested
+            'Literacy', 'Numeracy', 'Character Development', 'Circle Time',
+            'Practical Life', 'Handwriting', 'Rhymes', 'Social Skills',
         ];
     }
 

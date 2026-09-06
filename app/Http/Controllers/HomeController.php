@@ -31,8 +31,13 @@ class HomeController extends Controller
 
     public function subjects()
     {
+        // Authoritative list from CurriculumData ensures all domains including new subjects are present
+        $subjects = \App\Helpers\CurriculumData::getSubjects();
+        // Merge with any dynamic subjects from JsonDb for backward compatibility
         JsonDb::init();
-        return response()->json(['subjects' => JsonDb::get()['subjects']]);
+        $dbSubjects = JsonDb::get()['subjects'] ?? [];
+        $merged = array_values(array_unique(array_merge($subjects, $dbSubjects)));
+        return response()->json(['subjects' => $merged]);
     }
 
     public function apiTeacherLessonPlans($teacherId)
@@ -119,7 +124,7 @@ class HomeController extends Controller
             $results = array_values(array_filter($db['results'] ?? [], fn($r) => in_array($r['examId'] ?? '', $ownExamIds, true)));
         }
         return response()->json([
-            'subjects' => $db['subjects'] ?? [],
+            'subjects' => array_values(array_unique(array_merge(\App\Helpers\CurriculumData::getSubjects(), $db['subjects'] ?? []))),
             'classes' => \App\Helpers\CurriculumData::getClasses(),
             'terms' => \App\Helpers\CurriculumData::getTerms(),
             'weeks' => \App\Helpers\CurriculumData::getWeeks(),

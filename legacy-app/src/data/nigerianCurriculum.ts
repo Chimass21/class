@@ -18,7 +18,22 @@ export const EDUCATION_LEVELS: EducationLevelConfig[] = [
       "Sensory Play & Basic Science",
       "Coloring & Creative Art",
       "Health Habits",
-      "Social Habits"
+      "Social Habits",
+      "Basic Science",
+      "Character Development",
+      "Circle Time",
+      "Practical Life",
+      "CCA",
+      "PHE",
+      "Handwriting",
+      "Rhymes",
+      "Social Skills",
+      "Phonics",
+      "ICT",
+      "Home Economics",
+      "Agricultural Science",
+      "Verbal Reasoning",
+      "Quantitative Reasoning"
     ]
   },
   {
@@ -50,7 +65,19 @@ export const EDUCATION_LEVELS: EducationLevelConfig[] = [
       "French",
       "Nigerian Languages",
       "Quantitative Reasoning",
-      "Verbal Reasoning"
+      "Verbal Reasoning",
+      "Literacy",
+      "Numeracy",
+      "Character Development",
+      "Circle Time",
+      "Practical Life",
+      "CCA",
+      "PHE",
+      "Handwriting",
+      "Rhymes",
+      "Social Skills",
+      "Phonics",
+      "ICT"
     ]
   },
   {
@@ -73,7 +100,20 @@ export const EDUCATION_LEVELS: EducationLevelConfig[] = [
       "PHE",
       "CRS / IRS",
       "French",
-      "Security Education"
+      "Security Education",
+      "Literacy",
+      "Numeracy",
+      "Character Development",
+      "Circle Time",
+      "Practical Life",
+      "Handwriting",
+      "Rhymes",
+      "Social Skills",
+      "Phonics",
+      "ICT",
+      "Agricultural Science",
+      "Verbal Reasoning",
+      "Quantitative Reasoning"
     ]
   },
   {
@@ -99,7 +139,23 @@ export const EDUCATION_LEVELS: EducationLevelConfig[] = [
       "Data Processing",
       "Computer Studies",
       "Technical Drawing",
-      "CRS / IRS"
+      "CRS / IRS",
+      "Literacy",
+      "Numeracy",
+      "Basic Science",
+      "Character Development",
+      "Circle Time",
+      "Practical Life",
+      "CCA",
+      "PHE",
+      "Handwriting",
+      "Rhymes",
+      "Social Skills",
+      "Phonics",
+      "ICT",
+      "Home Economics",
+      "Verbal Reasoning",
+      "Quantitative Reasoning"
     ]
   }
 ];
