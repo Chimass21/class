@@ -748,6 +748,12 @@ class AIController extends Controller
                 . "- Show all SI units clearly: ms<sup>-1</sup>, kg, N, J, W, Pa";
         }
 
+        $imageInstruction = '';
+        if ($this->isLowerClass($class)) {
+            $imageInstruction = "\n\nVISUAL AID FOR LOWER CLASSES (Reception, Foundation, Nursery 1-2, Primary 1-2):\n"
+                . "These learners benefit from images. If the topic \"{$topic}\" would be clearer with a picture (e.g., animals, plants, shapes, colors, body parts, objects, vehicles, food, nature), add 1-2 image placeholders where they genuinely help explanation using the exact format [IMAGE: detailed description of what to show]. Use child-friendly, bright, simple descriptions like \"a friendly cartoon lion\" or \"colorful 3D shapes — circle, square, triangle\". Do NOT add images for abstract topics (numbers, feelings, rules) or where a picture wouldn't help. Only add when the topic genuinely needs a visual for young learners.";
+        }
+
         return <<<PROMPT
 You are a curriculum expert and professional lesson plan writer.
 
@@ -806,7 +812,7 @@ RULES:
 - Every field must contain substantial content — no empty or one-line entries.
 - If the topic is "{$topic}", do NOT write about anything else.
 - Use globally relatable examples and contexts throughout — do not mention Nigeria or specific cities like Lagos or Kano.
-{$stemFormatting}
+{$stemFormatting}{$imageInstruction}
 PROMPT;
     }
 
@@ -975,6 +981,17 @@ FORMATTING REQUIREMENTS FOR EQUATIONS AND FORMULAE:
             default => "Organize content based on the natural structure of the topic. Let the topic determine what headings and sections are appropriate."
         };
 
+        $imageInstructionLN = '';
+        if ($this->isLowerClass($class)) {
+            $imageInstructionLN = "\n\nVISUAL AID FOR LOWER CLASSES (Reception, Foundation, Nursery 1-2, Primary 1-2):\n"
+                . "Young learners learn best with pictures. If the topic \"{$topic}\" needs a visual to be understood (e.g., animals, shapes, colors, body parts, fruits, vehicles, plants, everyday objects), add 1-2 image placeholders in your lesson content where they would genuinely help. Use the exact format [IMAGE: detailed child-friendly description]. Example: [IMAGE: a bright cartoon elephant with big ears] or [IMAGE: colorful 3D shapes — cube, sphere, cylinder]. Do NOT add images for abstract topics like counting rules or feelings — only where a picture would truly help explain the topic to a young child.";
+        }
+
+        $imageInstructionMath = '';
+        if ($this->isLowerClass($class)) {
+            $imageInstructionMath = "\n\nVISUAL AID FOR LOWER CLASSES: Young learners need pictures. If the topic needs a visual, add [IMAGE: description] placeholders where helpful (e.g., shapes, objects). Only where a picture would help, not for abstract math rules.";
+        }
+
         return <<<PROMPT
 You are a curriculum expert and experienced classroom teacher. Write a DETAILED LESSON NOTE about "{$topic}" for {$subject} ({$class}, {$term}, Week {$week}). Difficulty: {$difficulty}.
 
@@ -998,7 +1015,7 @@ STRUCTURE RULES (CRITICAL):
 - NEVER include filler sections to match a template
 - Every section you include must add genuine educational value
 
-{$subjectGuidance}
+{$subjectGuidance}{$imageInstructionLN}
 
 {$weekScheme}
 {$subtopicInstruction}
@@ -1115,7 +1132,7 @@ For the CONTENT field, use these HTML headings as appropriate:
 - <h3>Examination Tips</h3>
 - <h3>Shortcuts</h3>
 
-{$weekScheme}
+{$weekScheme}{$imageInstructionMath}
 {$subtopicInstruction}
 
 MATHEMATICAL NOTATION — CRITICAL FORMATTING RULES:
@@ -1748,6 +1765,8 @@ PROMPT;
         $plan['ageRange'] = $ageRange;
         $plan['date'] = now()->format('l, F j, Y');
 
+        // Inject images for lower classes where topic needs visual (only where AI added [IMAGE: ...] placeholders)
+        $plan = $this->processImagePlaceholders($plan, $data['class'], $data['topic']);
         JsonDb::init();
         $db = JsonDb::get();
         $teacherId = $user['id'] ?? 'unknown';
@@ -1884,6 +1903,8 @@ PROMPT;
         $note['periods'] = $periods;
         $note['ageRange'] = $ageRange;
 
+        // Inject images for lower classes where topic needs visual
+        $note = $this->processImagePlaceholders($note, $data['class'], $data['topic']);
         JsonDb::init();
         $db = JsonDb::get();
         $teacherId = $user['id'] ?? 'unknown';
@@ -2610,6 +2631,36 @@ PROMPT;
              . "- Use proper notation: × (not x), ÷ (not /), <sup> for powers, √ for square roots, π for pi\n"
              . "- Format fractions with CSS — NEVER slanted slashes\n"
              . "- Return ONLY valid JSON in this format: {\"objectives\":[{\"id\":1,\"question\":\"stem that mentions {$topic}\",\"A\":\"opt\",\"B\":\"opt\",\"C\":\"opt\",\"D\":\"opt\",\"answer\":\"A\"}]}\n";
+    }
+
+    private function isLowerClass(string $class): bool
+    {
+        return in_array($class, ['Reception', 'Foundation', 'Nursery 1', 'Nursery 2', 'Primary 1', 'Primary 2'], true);
+    }
+
+    private function processImagePlaceholders(array $data, string $class, string $topic): array
+    {
+        if (!$this->isLowerClass($class)) return $data;
+        $replace = function ($text) {
+            return preg_replace_callback('/\[IMAGE:\s*(.*?)\]/i', function ($m) {
+                $desc = trim($m[1]);
+                if ($desc === '') $desc = 'illustration';
+                $encoded = urlencode($desc . ', educational illustration, bright colors, child-friendly');
+                $seed = rand(1, 1000000);
+                $url = "https://image.pollinations.ai/prompt/{$encoded}?width=600&height=400&nologo=true&seed={$seed}";
+                $safeDesc = htmlspecialchars($desc, ENT_QUOTES);
+                return '<div class="my-4 text-center"><img src="' . $url . '" alt="' . $safeDesc . '" class="max-w-full h-auto rounded-lg shadow-md mx-auto" style="max-width:600px;max-height:400px" loading="lazy" /><p class="text-xs text-slate-500 mt-1 italic">' . $safeDesc . '</p></div>';
+            }, $text);
+        };
+        $process = function ($value) use (&$process, $replace) {
+            if (is_string($value)) return $replace($value);
+            if (is_array($value)) {
+                foreach ($value as $k => $v) $value[$k] = $process($v);
+                return $value;
+            }
+            return $value;
+        };
+        return $process($data);
     }
 
     private function extractJson(string $text): ?array

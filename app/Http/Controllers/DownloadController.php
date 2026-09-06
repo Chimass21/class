@@ -468,6 +468,13 @@ class DownloadController extends Controller
 
     protected function truncate(string $text, int $limit = 200): string
     {
+        // For lower-class visual topics, preserve image HTML — don't truncate image tags
+        if (str_contains($text, '<img') || str_contains($text, '[IMAGE:')) {
+            // Return as-is (up to larger limit) to keep image visible in DOCX
+            // Strip only non-image tags for length check but keep image
+            $cleanForLength = strip_tags(preg_replace('/<img[^>]*>/i', '', $text));
+            if (mb_strlen($cleanForLength) <= $limit + 500) return strip_tags($text, '<img><div><p><br>');
+        }
         $clean = strip_tags($text);
         if (mb_strlen($clean) <= $limit) return $clean;
         $trimmed = mb_substr($clean, 0, $limit);
@@ -598,9 +605,16 @@ class DownloadController extends Controller
             $table->addRow();
             $sn = $table->addCell(900, array_merge($border, ['valign' => 'top']));
             $sn->addText($s['step'] ?? '', $vals, ['align' => 'center', 'spaceBefore' => 0, 'spaceAfter' => 0]);
-            $table->addCell(2700, array_merge($border, ['valign' => 'top']))->addText($this->truncate($s['teacherActivities'] ?? '', 200), $vals, $pStyleSmall);
-            $table->addCell(2700, array_merge($border, ['valign' => 'top']))->addText($this->truncate($s['learnerActivities'] ?? '', 200), $vals, $pStyleSmall);
-            $table->addCell(2700, array_merge($border, ['valign' => 'top']))->addText($this->truncate($s['learningPoints'] ?? '', 150), $vals, $pStyleSmall);
+            foreach (['teacherActivities' => 200, 'learnerActivities' => 200, 'learningPoints' => 150] as $field => $limit) {
+                $cell = $table->addCell(2700, array_merge($border, ['valign' => 'top']));
+                $content = $s[$field] ?? '';
+                if (str_contains($content, '<img') || str_contains($content, '[IMAGE:')) {
+                    // Render HTML with images for lower-class visual topics
+                    Html::addHtml($cell, $content, false, false);
+                } else {
+                    $cell->addText($this->truncate($content, $limit), $vals, $pStyleSmall);
+                }
+            }
         }
 
         // Evaluation
@@ -897,7 +911,7 @@ class DownloadController extends Controller
             'dpi' => 150,
             'defaultFont' => 'serif',
             'isHtml5ParserEnabled' => true,
-            'isRemoteEnabled' => false,
+            'isRemoteEnabled' => true,
         ]);
         return $pdf->download($filename . '.pdf');
     }
