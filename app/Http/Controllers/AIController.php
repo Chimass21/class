@@ -34,12 +34,14 @@ class AIController extends Controller
                 'schoolName' => 'nullable|string',
                 'teacherName' => 'nullable|string',
                 'duration' => 'nullable|string',
+                'date' => 'nullable|date',
             ]);
 
             $user = Session::get('user');
             $teacherName = $data['teacherName'] ?? $user['name'] ?? 'Teacher';
             $schoolName = $data['schoolName'] ?? 'Covenant Foundation School';
             $duration = $data['duration'] ?? '40 Minutes';
+            $selectedDate = $data['date'] ?? null;
             $ageRange = CurriculumData::getAgeRange($data['class']);
             $scheme = CurriculumData::getSchemeOfWork($data['subject'], $data['class'], $data['term']);
 
@@ -121,7 +123,7 @@ class AIController extends Controller
                     }
 
                     if (is_array($plan) && !empty($plan) && $this->isRelevantToTopic($plan, 'lesson_plan', $data['subject'], $data['topic'], $data['class'])) {
-                        return $this->storeAndReturnLessonPlan($plan, $data, $user, $teacherName, $schoolName, $duration, $ageRange);
+                        return $this->storeAndReturnLessonPlan($plan, $data, $user, $teacherName, $schoolName, $duration, $ageRange, $selectedDate);
                     }
                 }
 
@@ -131,7 +133,7 @@ class AIController extends Controller
                 ], 422);
             }
 
-            return $this->storeAndReturnLessonPlan($plan, $data, $user, $teacherName, $schoolName, $duration, $ageRange);
+            return $this->storeAndReturnLessonPlan($plan, $data, $user, $teacherName, $schoolName, $duration, $ageRange, $selectedDate);
 
         } catch (\Exception $e) {
             Log::error('Lesson plan generation failed', [
@@ -1750,7 +1752,7 @@ PROMPT;
 
     // --- STORE HELPERS ---
 
-    protected function storeAndReturnLessonPlan(array $plan, array $data, $user, string $teacherName, string $schoolName, string $duration, string $ageRange)
+    protected function storeAndReturnLessonPlan(array $plan, array $data, $user, string $teacherName, string $schoolName, string $duration, string $ageRange, ?string $selectedDate = null)
     {
         $plan = $this->normalizeObjectivePhrasing($plan);
         $plan['subject'] = $data['subject'];
@@ -1763,7 +1765,11 @@ PROMPT;
         $plan['teacherName'] = $teacherName;
         $plan['duration'] = $duration;
         $plan['ageRange'] = $ageRange;
-        $plan['date'] = now()->format('l, F j, Y');
+        if ($selectedDate) {
+            try { $plan['date'] = \Carbon\Carbon::parse($selectedDate)->format('l, F j, Y'); } catch (\Exception $e) { $plan['date'] = now()->format('l, F j, Y'); }
+        } else {
+            $plan['date'] = now()->format('l, F j, Y');
+        }
 
         // Inject images for lower classes where topic needs visual (only where AI added [IMAGE: ...] placeholders)
         $plan = $this->processImagePlaceholders($plan, $data['class'], $data['topic']);

@@ -175,7 +175,7 @@
                                         <select id="plan-class" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-600"></select>
                                     </div>
                                 </div>
-                                <div class="grid grid-cols-3 gap-3">
+                                <div class="grid grid-cols-4 gap-3">
                                     <div>
                                         <label class="text-xs font-semibold text-slate-600 block mb-1">Term</label>
                                         <select id="plan-term" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-600"></select>
@@ -188,6 +188,10 @@
                                         <label class="text-xs font-semibold text-slate-600 block mb-1">Duration</label>
                                         <input type="text" id="plan-duration" value="40 Minutes" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-600">
                                         <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center voice-btn-container" data-input="plan-duration"></div>
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-semibold text-slate-600 block mb-1">Date</label>
+                                        <input type="date" id="plan-date" value="{{ date('Y-m-d') }}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-600">
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-2 gap-3">
@@ -908,6 +912,7 @@ document.getElementById('lesson-plan-form')?.addEventListener('submit', async fu
                 schoolName: document.getElementById('plan-school').value,
                 teacherName: document.getElementById('plan-teacher').value,
                 duration: document.getElementById('plan-duration').value,
+                date: document.getElementById('plan-date').value,
             })
         });
         const data = await res.json();
