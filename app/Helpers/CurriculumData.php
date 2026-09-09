@@ -57,16 +57,16 @@ class CurriculumData
     public static function getAgeRange(string $class): string
     {
         return match (true) {
-            $class === 'Reception' => '2 – 3 years',
-            $class === 'Foundation' => '3 – 4 years',
-            $class === 'Nursery 1' => '4 – 5 years',
-            $class === 'Nursery 2' => '5 – 6 years',
-            $class === 'Primary 1' => '6 – 7 years',
-            $class === 'Primary 2' => '7 – 8 years',
-            $class === 'Primary 3' => '8 – 9 years',
-            $class === 'Primary 4' => '9 – 10 years',
-            $class === 'Primary 5' => '10 – 11 years',
-            $class === 'Primary 6' => '11 – 12 years',
+            $class === 'Reception' => '1 year 5 months – 2 years',
+            $class === 'Foundation' => '2 – 3 years',
+            $class === 'Nursery 1' => '3 – 4 years',
+            $class === 'Nursery 2' => '4 – 5 years',
+            $class === 'Primary 1' => '5 – 6 years',
+            $class === 'Primary 2' => '6 – 7 years',
+            $class === 'Primary 3' => '7 – 8 years',
+            $class === 'Primary 4' => '8 – 9 years',
+            $class === 'Primary 5' => '9 – 10 years',
+            $class === 'Primary 6' => '10 – 11 years',
             str_starts_with($class, 'JSS') => '11 – 14 years',
             str_starts_with($class, 'SS') => '14 – 17 years',
             default => 'varies',
@@ -213,8 +213,8 @@ Term: {$term}
 Topic: {$topic}
 
 Educational Level Context:
-- NURSERY (Reception, Foundation, Nursery 1-2): Play-based, sensory, early literacy/numeracy, ages 2-6, very simple language and concrete play examples (Reception lowest)
-- PRIMARY (Primary 1-6): Foundational concepts, simple language, concrete examples, play-based learning, basic literacy and numeracy
+- NURSERY (Reception, Foundation, Nursery 1-2): Play-based, sensory, early literacy/numeracy, ages 1 year 5 months – 5 years, very simple language and concrete play examples (Reception lowest: 1 year 5 months – 2 years, Foundation: 2 – 3 years)
+- PRIMARY (Primary 1-6): Foundational concepts, simple language, concrete examples, play-based learning, basic literacy and numeracy, ages 5 – 11 years
 - JUNIOR SECONDARY (JSS1-3): Intermediate concepts, introduction to abstract thinking, subject specialization begins
 - SENIOR SECONDARY (SS1-3): Advanced concepts, critical thinking, examination preparation
 
