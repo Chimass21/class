@@ -75,12 +75,21 @@ MATHEMATICAL AND SCIENTIFIC NOTATION (CRITICAL FORMATTING RULES):
 
 Always respond with accurate, well-structured content tailored for teachers and students. DO NOT generate simple, one-step questions. Every question should require reasoning, multiple steps, or application of knowledge.';
 
+    protected function sanitizeKey(?string $key): ?string
+    {
+        if (!is_string($key) || trim($key) === '') return null;
+        // Strip whitespace, newlines and carriage returns that can corrupt the Authorization header
+        $key = trim($key);
+        $key = str_replace(["\r", "\n", " ", "\t"], '', $key);
+        return $key !== '' ? $key : null;
+    }
+
     public function __construct()
     {
-        $key = config('services.openai.api_key');
-        $this->apiKey = (is_string($key) && $key !== '') ? $key : null;
-        $this->baseUrl = rtrim(config('services.openai.base_url', 'https://api.deepseek.com'), '/');
-        $this->model = config('services.openai.model', 'deepseek-chat');
+        $key = $this->sanitizeKey(config('services.openai.api_key'));
+        $this->apiKey = $key;
+        $this->baseUrl = rtrim(trim((string) config('services.openai.base_url', 'https://api.deepseek.com')), '/');
+        $this->model = trim((string) config('services.openai.model', 'deepseek-chat'));
         $this->maxRetries = max(1, (int) config('services.openai.max_retries', 3));
         $this->timeout = max(30, (int) config('services.openai.timeout', 120));
         $this->tpmBudget = max(0, (int) config('services.openai.tpm_budget', 0));
@@ -90,9 +99,12 @@ Always respond with accurate, well-structured content tailored for teachers and 
         try {
             $override = \App\Helpers\JsonDb::get()['ai'] ?? null;
             if (is_array($override) && !empty($override['api_key']) && !empty($override['base_url']) && !empty($override['model'])) {
-                $this->apiKey = (string) $override['api_key'];
-                $this->baseUrl = rtrim((string) $override['base_url'], '/');
-                $this->model = (string) $override['model'];
+                $sanitizedOverrideKey = $this->sanitizeKey((string) $override['api_key']);
+                if ($sanitizedOverrideKey !== null) {
+                    $this->apiKey = $sanitizedOverrideKey;
+                }
+                $this->baseUrl = rtrim(trim((string) $override['base_url']), '/');
+                $this->model = trim((string) $override['model']);
                 if (!empty($override['tpm_budget']) || isset($override['tpm_budget']) && (string)$override['tpm_budget'] === '0') {
                     $this->tpmBudget = max(0, (int) $override['tpm_budget']);
                 }
@@ -111,13 +123,13 @@ Always respond with accurate, well-structured content tailored for teachers and 
         }
 
         // Optional automatic failover provider (e.g. DeepSeek)
-        $fallbackKey = config('services.deepseek.api_key');
-        if (is_string($fallbackKey) && $fallbackKey !== '' && $fallbackKey !== $this->apiKey) {
+        $fallbackKey = $this->sanitizeKey(config('services.deepseek.api_key'));
+        if ($fallbackKey !== null && $fallbackKey !== $this->apiKey) {
             $this->providers[] = [
                 'name' => 'fallback-deepseek',
                 'key' => $fallbackKey,
-                'base' => rtrim((string) config('services.deepseek.base_url', 'https://api.deepseek.com'), '/'),
-                'model' => (string) config('services.deepseek.model', 'deepseek-chat'),
+                'base' => rtrim(trim((string) config('services.deepseek.base_url', 'https://api.deepseek.com')), '/'),
+                'model' => trim((string) config('services.deepseek.model', 'deepseek-chat')),
             ];
         }
     }

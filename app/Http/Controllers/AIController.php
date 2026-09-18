@@ -24,6 +24,15 @@ class AIController extends Controller
     public function generateLessonPlan(Request $request)
     {
         try {
+            // Normalize empty strings to null for nullable fields (prevents 422 when frontend sends "")
+            if ($request->input('date') === '') {
+                $request->merge(['date' => null]);
+            }
+            foreach (['subTopic', 'schoolName', 'teacherName', 'duration'] as $field) {
+                if ($request->input($field) === '') {
+                    $request->merge([$field => null]);
+                }
+            }
             $data = $request->validate([
                 'subject' => 'required|string',
                 'class' => 'required|string',
