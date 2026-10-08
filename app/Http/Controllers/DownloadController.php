@@ -48,14 +48,28 @@ class DownloadController extends Controller
         }
         if (!$user) abort(401);
 
+        $filename = $this->planDownloadName($plan, $id);
         if ($format === 'pdf') {
             $html = $this->buildPlanHtml($plan);
-            return $this->downloadPdf($html, 'lesson_plan_' . $id);
+            return $this->downloadPdf($html, $filename);
         }
         if ($format === 'docx') {
-            return $this->downloadPlanDocx($plan, 'lesson_plan_' . $id);
+            return $this->downloadPlanDocx($plan, $filename);
         }
         return abort(400);
+    }
+
+    protected function planDownloadName(array $plan, string $fallbackId): string
+    {
+        $subject = trim((string) ($plan['subject'] ?? ''));
+        $class = trim((string) ($plan['class'] ?? $plan['classLevel'] ?? ''));
+        $week = trim((string) ($plan['week'] ?? ''));
+        $parts = array_filter([$subject, $class, $week !== '' ? 'Week ' . $week : ''], fn ($p) => $p !== '');
+        $name = implode(' - ', $parts);
+        if ($name === '') $name = 'lesson_plan_' . $fallbackId;
+        $name = preg_replace('/[\\\\\/:*?"<>|]+/', '', $name);
+        $name = trim(preg_replace('/\s+/', ' ', $name));
+        return $name !== '' ? $name : 'lesson_plan_' . $fallbackId;
     }
 
     public function downloadExam($id, $format)

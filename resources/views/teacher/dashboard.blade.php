@@ -1072,12 +1072,14 @@ async function sharePlan() {
     const url = '/api/download/lesson-plan/' + currentPlanId + '/docx';
     const plan = teacherData.plans.find(p => p.id === currentPlanId);
     const title = plan ? plan.topic : 'Lesson Plan';
+    const planName = plan ? ([plan.subject, plan.class, plan.week ? 'Week ' + plan.week : ''].filter(Boolean).join(' - ') || plan.topic || 'Lesson Plan') : 'Lesson Plan';
+    const planFileName = planName.replace(/[^a-z0-9\- ]/gi,'').trim().replace(/\s+/g,'_').substring(0,80) || 'Lesson_Plan';
     // 1) Direct DOCX file share — recipients on WhatsApp/Email see the file immediately (tabular, not a link)
     try {
         const res = await fetch(url, { credentials: 'same-origin' });
         if (res.ok) {
             const blob = await res.blob();
-            const file = new File([blob], title.replace(/[^a-z0-9]/gi,'_').substring(0,30) + '.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+            const file = new File([blob], planFileName + '.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 await navigator.share({ files: [file], title: title + ' - Cfschool', text: title + ' - DOCX tabular format' });
                 return;
@@ -1104,7 +1106,7 @@ async function sharePlan() {
             }
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = title.replace(/[^a-z0-9]/gi,'_').substring(0,30) + '.docx';
+            a.download = planFileName + '.docx';
             document.body.appendChild(a); a.click(); document.body.removeChild(a);
             setTimeout(() => URL.revokeObjectURL(a.href), 1000);
             alert('DOCX tabular file downloaded.\n\nPlease open WhatsApp or Email and attach the file from your Downloads.\nThe recipient will receive the DOCX file immediately — not a link to the website.\n\nTip: On mobile, tap Share again and choose WhatsApp/Email from the system sheet to send the file directly without downloading.');
