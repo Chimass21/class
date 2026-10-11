@@ -941,7 +941,7 @@ function renderStudentNote(note) {
 
 // Full Nigerian curriculum subjects
 function defaultSubjects() {
-    return ['Mathematics','English Language','Physics','Chemistry','Biology','Agricultural Science','Economics','Government','Civic Education','Literature in English','Commerce','Accounting','Computer Studies/ICT','Geography','History','Home Economics','Christian Religious Studies','Islamic Studies','Social Studies','Basic Science','Basic Technology','Physical & Health Education','Business Studies','French','Fine Arts/Creative Arts','Music','Yoruba','Hausa','Igbo','Further Mathematics','Intermediate Science','Cultural and Creative Arts (CCA)','Nigerian History','Artificial Intelligence','Phonics','Vocational Studies','Physical and Health Education (PHE)','Coding','Verbal Reasoning','Craft and Art'];
+    return ['Mathematics','English Language','Physics','Chemistry','Biology','Agricultural Science','Economics','Government','Civic Education','Literature in English','Commerce','Accounting','Computer Studies/ICT','Geography','History','Home Economics','Christian Religious Studies','Islamic Studies','Social Studies','Social and Citizenship Education','Basic Science','Basic Technology','Physical & Health Education','Business Studies','French','Fine Arts/Creative Arts','Music','Yoruba','Hausa','Igbo','Further Mathematics','Intermediate Science','Cultural and Creative Arts (CCA)','Nigerian History','Artificial Intelligence','Phonics','Vocational Studies','Physical and Health Education (PHE)','Coding','Verbal Reasoning','Craft and Art'];
 }
 
 // Populate subject dropdowns

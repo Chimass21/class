@@ -22,6 +22,7 @@
                             <option>Physics</option>
                             <option>Chemistry</option>
                             <option>Biology</option>
+                            <option>Social and Citizenship Education</option>
                         </select>
                     </div>
                     <div>

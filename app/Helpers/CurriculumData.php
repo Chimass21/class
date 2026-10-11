@@ -11,7 +11,7 @@ class CurriculumData
             'Agricultural Science', 'Economics', 'Commerce', 'Accounting',
             'Government', 'History', 'Geography', 'Literature', 'ICT',
             'Civic Education', 'Basic Science', 'Basic Technology',
-            'Social Studies', 'Home Economics', 'Physical Education',
+            'Social Studies', 'Social and Citizenship Education', 'Home Economics', 'Physical Education',
             'Christian Religious Studies', 'Islamic Studies',
             'French', 'Yoruba', 'Igbo', 'Hausa', 'Music', 'Art & Design',
             'Intermediate Science', 'Cultural and Creative Arts (CCA)', 'CCA',

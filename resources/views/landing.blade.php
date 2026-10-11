@@ -242,6 +242,7 @@
                         ['name' => 'Artificial Intelligence', 'icon' => '🤖', 'level' => 'All Levels'],
                         ['name' => 'Cultural & Creative Arts', 'icon' => '🎨', 'level' => 'Primary & Secondary'],
                         ['name' => 'Social Studies', 'icon' => '🌍', 'level' => 'Primary & Secondary'],
+                        ['name' => 'Social and Citizenship Education', 'icon' => '🤝', 'level' => 'Primary & Secondary'],
                         ['name' => 'Physical & Health Education', 'icon' => '⚽', 'level' => 'All Levels'],
                         ['name' => 'Phonics', 'icon' => '🔤', 'level' => 'Primary'],
                     ];

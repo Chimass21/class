@@ -910,7 +910,7 @@ RULES:
 - Every step MUST involve solving mathematical problems — minimize lecturing
 - Examples must progress from simple to difficult
 - Each worked example must show EVERY step — no skipping
-- Include globally relatable real-world contexts (market prices, local measurements) in word problems — use neutral currency like $ or generic units, not $aira
+- Include globally relatable real-world contexts (market prices, local measurements) in word problems — use neutral currency like \$ or generic units, not the Naira (₦)
 - Allocate at least 60% of class time to students solving problems (guided + independent)
 - Evaluation questions must test calculation ability, not theory recall
 - Assignment must be substantial problem-solving practice
@@ -1286,7 +1286,7 @@ INSTRUCTIONS;
     {
         $math = ['Mathematics', 'Further Mathematics'];
         $stem = ['Physics', 'Chemistry', 'Biology', 'Basic Science', 'Intermediate Science', 'Physical and Health Education (PHE)', 'Physical Education'];
-        $humanities = ['English Language', 'Literature', 'Literature in English', 'History', 'Government', 'Civic Education', 'Social Studies', 'Christian Religious Studies', 'Islamic Studies', 'Nigerian History', 'Music', 'Art & Design', 'Cultural and Creative Arts (CCA)', 'Craft and Art', 'French', 'Yoruba', 'Igbo', 'Hausa', 'Phonics', 'Verbal Reasoning'];
+        $humanities = ['English Language', 'Literature', 'Literature in English', 'History', 'Government', 'Civic Education', 'Social Studies', 'Christian Religious Studies', 'Islamic Studies', 'Nigerian History', 'Music', 'Art & Design', 'Cultural and Creative Arts (CCA)', 'Craft and Art', 'French', 'Yoruba', 'Igbo', 'Hausa', 'Phonics', 'Verbal Reasoning', 'Social and Citizenship Education'];
         $commercial = ['Commerce', 'Accounting', 'Economics'];
         $tech_voc = ['Basic Technology', 'ICT', 'Coding', 'Computer Studies', 'Home Economics', 'Agricultural Science', 'Vocational Studies', 'Artificial Intelligence'];
 
